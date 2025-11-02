@@ -111,12 +111,12 @@ export default function End() {
       </div>
 
       {/* Blog Button */}
-      <a
+      <Link
         href="/"
         className="border border-white py-3 px-6 w-[60%] sm:w-[40%] md:w-[20%] flex justify-center items-center mx-auto uppercase font-mono mt-6 hover:bg-white hover:text-black transition"
       >
         View our blogs
-      </a>
+      </Link>
 
       <Floater />
     </div>

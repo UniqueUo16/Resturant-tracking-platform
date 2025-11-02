@@ -11,7 +11,7 @@ export default function Newsletter() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:5141/services")
+        const res = await fetch("https://resturant-tracking-platform-2.onrender.com/services")
         if (!res.ok) throw new Error("Failed to fetch service data")
         const result = await res.json()
         setData(result)

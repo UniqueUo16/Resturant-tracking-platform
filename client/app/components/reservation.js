@@ -13,7 +13,7 @@ export default function Reservation() {
         useEffect(() => {
       async function fetchData() {
         try {
-          const res = await fetch("http://localhost:5141/reserve")
+          const res = await fetch("https://resturant-tracking-platform-2.onrender.com/reserve")
           if (!res.ok) throw new Error("Failed to fetch service data")
           const result = await res.json()
           setData(result) // backend returns an array

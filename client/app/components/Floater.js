@@ -139,9 +139,9 @@ export default function Pricing() {
                     required
                   >
                     <option value="">Select Service Type</option>
-                    <option value="Standard">📦 Standard (3–5 days)</option>
-                    <option value="Express">⚡ Express (1–2 days)</option>
-                    <option value="Same-Day">🚚 Same-Day Delivery</option>
+                    <option value="Standard">📦 Book Food (3–5 days)</option>
+                    <option value="Express">Book Table (1–2 days)</option>
+                    <option value="Same-Day">Buy Food Delivery</option>
                   </select>
                   <button
                     type="submit"
