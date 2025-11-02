@@ -39,7 +39,7 @@ export default function Home() {
     <>
       {/* Full-page Preloader */}
       {loading && (
-        <div className={`${montrasset.className} fixed inset-0 z-50 flex flex-col justify-center items-center bg-[orange]`>
+        <div className={`${montrasset.className} fixed inset-0 z-50 flex flex-col justify-center items-center bg-[orange]`}>
           <motion.div
             className="w-20 h-20 border-4 border-yellow-400 border-t-transparent rounded-full"
             animate={{ rotate: 360 }}
