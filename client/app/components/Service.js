@@ -105,3 +105,4 @@ export default function Newsletter() {
     </div>
   )
 }
+dotnet restore && dotnet publish -c Release -o out
