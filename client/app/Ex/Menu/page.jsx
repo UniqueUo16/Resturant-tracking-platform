@@ -22,7 +22,7 @@ export default function ShopPage() {
   useEffect(() => {
     async function fetchMenu() {
       try {
-        const res = await fetch("http://localhost:5141/menu");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu`);
         if (!res.ok) throw new Error("Failed to load menu");
         const data = await res.json();
         setMenuItems(data);

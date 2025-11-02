@@ -33,7 +33,7 @@ export default function Navbar() {
         {/* Logo */}
         <b className="text-yellow-300 text-2xl font-mono">Logo</b>
 
-        <input className="p-3 rounded-full border border-white" placeholder="Search ?"></input>
+        <input className="p-3 rounded-full border border-white text-white" placeholder="Search ?"></input>
 
         {/* Hamburger (mobile only) */}
         <button

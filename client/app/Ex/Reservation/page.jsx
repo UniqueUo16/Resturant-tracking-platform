@@ -11,7 +11,7 @@ export default function Reservation() {
      useEffect(() => {
       async function fetchData() {
         try {
-          const res = await fetch("http://localhost:5000/reserve")
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reserve`)
           if (!res.ok) throw new Error("Failed to fetch service data")
           const result = await res.json()
           setData(result) // backend returns an array
