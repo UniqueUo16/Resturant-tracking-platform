@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import HeroCarousel from "./HeroCarousel"; // assuming your current component is exported here
 import { motion } from "framer-motion";
 
 import End from "./components/Ending";
