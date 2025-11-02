@@ -41,7 +41,7 @@ export default function Home() {
             transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           />
           <p className="mt-4 text-white text-lg sm:text-xl font-semibold">
-            Loading... Oh you stayed.. Dont forget Unique Uo the developer!!! 🍴
+            Loading... Oh you stayed  🍴
           </p>
         </div>
       )}
