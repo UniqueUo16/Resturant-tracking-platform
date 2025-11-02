@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Floater from "./Floater";
+import Link from "next/link";
 import Reservation from "./reservation";
 
 export default function End() {

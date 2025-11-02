@@ -99,7 +99,7 @@ export default function Navbar() {
             {/* Header */}
             <div>
               <div className="flex justify-between items-center mb-8">
-                <span className="text-2xl font-serif text-amber-500">Unique Uo's</span>
+                <span className="text-2xl font-serif text-amber-500">Unique Uo</span>
         
               </div>
 
