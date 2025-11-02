@@ -5,11 +5,15 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // Your Next.js app
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(
+                "http://localhost:3000",
+                "https://resturantlogistics.vercel.app" // live frontend URL
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
+
 
 // ✅ Add support for JSON serialization
 builder.Services.AddControllers();
