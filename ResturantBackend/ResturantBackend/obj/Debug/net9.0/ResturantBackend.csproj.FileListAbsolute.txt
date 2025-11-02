@@ -31,3 +31,4 @@ C:\Users\User\Documents\Project_spalt\resturant-v.02\ResturantBackend\ResturantB
 C:\Users\User\Documents\Project_spalt\resturant-v.02\ResturantBackend\ResturantBackend\obj\Debug\net9.0\ResturantBackend.genruntimeconfig.cache
 C:\Users\User\Documents\Project_spalt\resturant-v.02\ResturantBackend\ResturantBackend\obj\Debug\net9.0\ref\ResturantBackend.dll
 C:\Users\User\Documents\Project_spalt\resturant-v.02\ResturantBackend\ResturantBackend\bin\Debug\net9.0\ResturantBackend.staticwebassets.runtime.json
+C:\Users\User\documents\project_spalt\resturant-v.02\resturantbackend\resturantbackend\obj\Debug\net9.0\ResturantBackend.sourcelink.json

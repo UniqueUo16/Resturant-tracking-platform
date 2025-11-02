@@ -12,7 +12,7 @@ export default function Menu() {
     useEffect(() => {
         async function fetchMenujs() {
             try {
-                const res = await fetch("http://localhost:5000/menujs");
+                const res = await fetch("http://localhost:5141/menujs");
                 if (!res.ok) throw new Error("Failed To Fetch Menu");
                 const data = await res.json();
                 setMenujsData(data);

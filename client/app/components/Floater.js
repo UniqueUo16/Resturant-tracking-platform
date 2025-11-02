@@ -2,23 +2,25 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Truck, Airplay, Globe } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Truck, Airplay, Globe, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Pricing() {
   const [form, setForm] = useState({ name: "", email: "", date: "", slot: "" });
   const [submitted, setSubmitted] = useState(false);
-  const [open, setOpen] = useState(false); // toggle form visibility
+  const [open, setOpen] = useState(false); // 👈 toggle bottom drawer
   const router = useRouter();
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
-    alert("Booking Submitted redirecting...", form);
+    alert("Booking submitted — redirecting...");
     setTimeout(() => {
-      router.push("/Ex_pages/Booking")
+      router.push("/Ex_pages/Booking");
     }, 1000);
   };
 
@@ -29,80 +31,130 @@ export default function Pricing() {
   ];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto bg-black sm:bg-amber-50 relative">
-      {/* Hero, Pricing Cards, Shipping Sections here... */}
-
-      {/* Floating Circular Booking Button / Form */}
-      <div className="fixed bottom-8 right-8 z-50">
-        {open ? (
-          <div className="w-80 bg-white text-black p-4 rounded-2xl shadow-lg relative">
-            <button
-              onClick={() => setOpen(false)}
-              className="absolute -top-3 -right-3 bg-amber-600  rounded-full w-6 h-6 flex items-center justify-center hover:bg-amber-700 transition"
-            >
-              ×
-            </button>
-            <h3 className="text-xl font-bold mb-3 text-center">Fill The field to Book a slot <br /><span className="text-[0.8rem]">You would be redirected to <br /> the Booking form</span></h3>
-            {submitted ? (
-              <p className="text-green-600 text-center font-semibold">✅ Booking Confirmed!</p>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-2">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  value={form.name}
-                  onChange={handleChange}
-                  className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  required
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={form.email}
-                  onChange={handleChange}
-                  className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  required
-                />
-                <input
-                  type="date"
-                  name="date"
-                  value={form.date}
-                  onChange={handleChange}
-                  className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  required
-                />
-                <select
-                  name="slot"
-                  value={form.slot}
-                  onChange={handleChange}
-                  className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  required
-                >
-                  <option value="">Select Service Type</option>
-                  <option value="Standard">📦 Standard (3-5 days)</option>
-                  <option value="Express">⚡ Express (1-2 days)</option>
-                  <option value="Same-Day"> Same-Day Delivery</option>
-                </select>
-                <button
-                  type="submit"
-                  className="w-full bg-amber-600 text-white font-semibold py-2 rounded-xl hover:bg-amber-700 transition"
-                >
-                  Book Now
-                </button>
-              </form>
-            )}
-          </div>
-        ) : (
-          <button
-            onClick={() => setOpen(true)}
-            className="w-14 h-14 rounded-full bg-amber-600 text-white flex items-center justify-center shadow-lg hover:bg-amber-700 transition"
+    <div className="p-8 max-w-6xl mx-auto bg-black text-white relative min-h-screen">
+      {/* ✅ Your pricing/hero/shipping sections would go here */}
+      <h1 className="text-3xl font-bold mb-6 text-amber-500">
+        Choose Your Shipping Plan
+      </h1>
+      <div className="grid sm:grid-cols-3 gap-6">
+        {shippingOptions.map((opt) => (
+          <div
+            key={opt.title}
+            className="bg-[#111] rounded-xl p-6 shadow-md border border-gray-800 hover:border-amber-500 transition"
           >
-            📅
-          </button>
-        )}
+            <div className="flex items-center gap-3 mb-2">
+              {opt.icon}
+              <h2 className="text-lg font-semibold">{opt.title}</h2>
+            </div>
+            <p className="text-gray-400 text-sm mb-1">{opt.time}</p>
+            <p className="text-amber-500 font-semibold">{opt.price}</p>
+          </div>
+        ))}
       </div>
+
+      {/* 🟨 Fixed Proceed Button */}
+      <div className="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-gray-800 px-6 py-4 flex justify-between items-center z-40">
+        <p className="text-gray-300 text-sm">
+          Ready to proceed with your order?
+        </p>
+        <button
+          onClick={() => setOpen(true)}
+          className="bg-amber-500 text-black font-semibold px-5 py-2 rounded-full hover:bg-amber-400 transition"
+        >
+          Proceed to Checkout
+        </button>
+      </div>
+
+      {/* 🧾 Bottom Slide-Up Checkout Form */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-center items-end"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              className="bg-white text-black w-full sm:w-[500px] rounded-t-3xl p-6 shadow-2xl"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-amber-600">
+                  Checkout Form
+                </h2>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="text-gray-500 hover:text-amber-500 transition"
+                >
+                  <X size={22} />
+                </button>
+              </div>
+
+              {submitted ? (
+                <div className="text-center py-8">
+                  <p className="text-green-600 font-semibold">
+                    ✅ Booking Confirmed!
+                  </p>
+                  <p className="text-gray-500 text-sm mt-2">
+                    Redirecting to Booking Page...
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Full Name"
+                    value={form.name}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    required
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    value={form.email}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    required
+                  />
+                  <input
+                    type="date"
+                    name="date"
+                    value={form.date}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    required
+                  />
+                  <select
+                    name="slot"
+                    value={form.slot}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    required
+                  >
+                    <option value="">Select Service Type</option>
+                    <option value="Standard">📦 Standard (3–5 days)</option>
+                    <option value="Express">⚡ Express (1–2 days)</option>
+                    <option value="Same-Day">🚚 Same-Day Delivery</option>
+                  </select>
+                  <button
+                    type="submit"
+                    className="w-full bg-amber-600 text-white font-semibold py-2 rounded-md hover:bg-amber-700 transition"
+                  >
+                    Confirm & Continue
+                  </button>
+                </form>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

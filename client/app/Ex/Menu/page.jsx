@@ -1,21 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { ShoppingCart, Plus, Minus } from "lucide-react";
+import {
+  ShoppingCart,
+  Plus,
+  Minus,
+  X,
+  Filter,
+} from "lucide-react";
 
 export default function ShopPage() {
   const [menuItems, setMenuItems] = useState([]);
   const [cart, setCart] = useState({});
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [isCartOpen, setIsCartOpen] = useState(false); // 👈 for mobile cart drawer
 
   // ✅ Fetch menu from backend
   useEffect(() => {
     async function fetchMenu() {
       try {
-        const res = await fetch("http://localhost:5000/menu");
+        const res = await fetch("http://localhost:5141/menu");
         if (!res.ok) throw new Error("Failed to load menu");
         const data = await res.json();
         setMenuItems(data);
@@ -66,68 +73,42 @@ export default function ShopPage() {
 
   return (
     <section className="min-h-screen bg-[#000000] text-gray-200 font-sans relative flex flex-col lg:flex-row">
-      {/* Sidebar Cart */}
+      {/* 🛒 Desktop Cart Sidebar */}
       <motion.aside
-        className="lg:w-[25%] bg-[#111] border-l border-gray-800 p-8 sticky top-0 h-screen flex flex-col justify-between"
+        className="hidden lg:flex lg:w-[25%] bg-[#111] border-l border-gray-800 p-8 sticky top-0 h-screen flex-col justify-between"
         initial={{ x: 100, opacity: 0 }}
         whileInView={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div>
-          <h2 className="text-xl font-serif text-amber-500 mb-6 flex items-center gap-2">
-            <ShoppingCart size={18} /> Your Cart
-          </h2>
-          <div className="space-y-4">
-            {Object.keys(cart).length === 0 ? (
-              <p className="text-gray-500 text-sm italic">Your cart is empty.</p>
-            ) : (
-              Object.entries(cart).map(([id, qty]) => {
-                const item = menuItems.find((i) => i.id === Number(id));
-                return (
-                  <div key={id} className="flex justify-between items-center">
-                    <span className="text-sm">{item?.name}</span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => removeFromCart(item)}
-                        className="p-1 border border-gray-600 rounded-full hover:border-amber-500"
-                      >
-                        <Minus size={12} />
-                      </button>
-                      <span className="text-sm">{qty}</span>
-                      <button
-                        onClick={() => addToCart(item)}
-                        className="p-1 border border-gray-600 rounded-full hover:border-amber-500"
-                      >
-                        <Plus size={12} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-        <div className="border-t border-gray-700 mt-6 pt-4">
-          <p className="text-gray-400 text-sm mb-2">Subtotal:</p>
-          <p className="text-lg font-semibold text-amber-500">
-            ${total.toFixed(2)}
-          </p>
-          <button className="mt-4 w-full py-2 bg-amber-500 text-black rounded-full font-semibold hover:bg-amber-400 transition">
-            Proceed to Checkout
-          </button>
-        </div>
+        <CartContent
+          cart={cart}
+          menuItems={menuItems}
+          total={total}
+          addToCart={addToCart}
+          removeFromCart={removeFromCart}
+        />
       </motion.aside>
 
-      {/* Main Shop Area */}
-      <div className="flex-1 p-8 lg:p-12 mt-20">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10">
+      {/* 🍔 Mobile Cart Toggle Button */}
+      <button
+        onClick={() => setIsCartOpen(true)}
+        className="lg:hidden fixed bottom-6 right-6 z-40 bg-amber-500 text-black p-4 rounded-full shadow-lg hover:bg-amber-400 transition"
+      >
+        <ShoppingCart size={22} />
+      </button>
+
+      {/* 🛍️ Main Shop Area */}
+      <div className="flex-1 p-6 sm:p-8 lg:p-12 mt-20 lg:mt-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
           <h1 className="text-3xl font-serif text-amber-500">Order Online</h1>
-          <div className="flex gap-3 mt-4 sm:mt-0">
+
+          {/* Category Filters */}
+          <div className="flex flex-wrap gap-2 mt-4 sm:mt-0">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-4 py-2 rounded-full text-sm transition-all ${
+                className={`px-4 py-2 text-sm rounded-full transition-all ${
                   filter === cat
                     ? "bg-amber-500 text-black"
                     : "border border-gray-600 hover:border-amber-500"
@@ -139,15 +120,15 @@ export default function ShopPage() {
           </div>
         </div>
 
-        {/* Product Grid */}
+        {/* 🧁 Product Grid */}
         <motion.div
           layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8"
         >
           {filteredItems.map((item) => (
             <motion.div
               key={item.id}
-              className="bg-[#111] rounded-sm p-4 flex flex-col justify-between shadow-md hover:shadow-[0_0_15px_rgba(255,191,0,0.1)] transition"
+              className="bg-[#111] rounded-lg p-4 flex flex-col justify-between shadow-md hover:shadow-[0_0_15px_rgba(255,191,0,0.1)] transition"
               whileHover={{ scale: 1.03 }}
             >
               <Image
@@ -155,24 +136,22 @@ export default function ShopPage() {
                 alt={item.name}
                 width={300}
                 height={200}
-                className="rounded-2xl object-cover mb-4"
+                className="rounded-lg object-cover mb-4"
               />
-              <div className="flex flex-col flex-1 justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-white">
-                    {item.name}
-                  </h3>
-                  <p className="text-sm text-gray-500">{item.category}</p>
-                </div>
+              <div className="flex flex-col justify-between flex-1">
+                <h3 className="text-lg font-semibold text-white">
+                  {item.name}
+                </h3>
+                <p className="text-xs text-gray-500">{item.category}</p>
                 <div className="flex items-center justify-between mt-4">
                   <span className="text-amber-500 font-bold">
                     ${item.price.toFixed(2)}
                   </span>
                   <button
                     onClick={() => addToCart(item)}
-                    className="px-4 py-2 text-sm bg-amber-500 text-black rounded-full font-semibold hover:bg-amber-400 transition"
+                    className="px-3 py-2 text-xs bg-amber-500 text-black rounded-full font-semibold hover:bg-amber-400 transition"
                   >
-                    Add to Cart
+                    Add
                   </button>
                 </div>
               </div>
@@ -180,6 +159,91 @@ export default function ShopPage() {
           ))}
         </motion.div>
       </div>
+
+      {/* 📱 Mobile Cart Drawer */}
+      <AnimatePresence>
+        {isCartOpen && (
+          <motion.div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-end"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              className="bg-[#111] w-full max-h-[80vh] p-6 rounded-t-3xl overflow-y-auto"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-serif text-amber-500 flex items-center gap-2">
+                  <ShoppingCart size={18} /> Your Cart
+                </h2>
+                <button
+                  onClick={() => setIsCartOpen(false)}
+                  className="text-gray-400 hover:text-amber-400"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <CartContent
+                cart={cart}
+                menuItems={menuItems}
+                total={total}
+                addToCart={addToCart}
+                removeFromCart={removeFromCart}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
+  );
+}
+
+/* 🧩 Cart Content Reusable Component */
+function CartContent({ cart, menuItems, total, addToCart, removeFromCart }) {
+  return (
+    <>
+      <div className="space-y-4">
+        {Object.keys(cart).length === 0 ? (
+          <p className="text-gray-500 text-sm italic">Your cart is empty.</p>
+        ) : (
+          Object.entries(cart).map(([id, qty]) => {
+            const item = menuItems.find((i) => i.id === Number(id));
+            return (
+              <div key={id} className="flex justify-between items-center">
+                <span className="text-sm">{item?.name}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => removeFromCart(item)}
+                    className="p-1 border border-gray-600 rounded-full hover:border-amber-500"
+                  >
+                    <Minus size={12} />
+                  </button>
+                  <span className="text-sm">{qty}</span>
+                  <button
+                    onClick={() => addToCart(item)}
+                    className="p-1 border border-gray-600 rounded-full hover:border-amber-500"
+                  >
+                    <Plus size={12} />
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      <div className="border-t border-gray-700 mt-6 pt-4">
+        <p className="text-gray-400 text-sm mb-2">Subtotal:</p>
+        <p className="text-lg font-semibold text-amber-500">${total.toFixed(2)}</p>
+        <button className="mt-4 w-full py-2 bg-amber-500 text-black rounded-full font-semibold hover:bg-amber-400 transition">
+          Proceed to Checkout
+        </button>
+      </div>
+    </>
   );
 }
