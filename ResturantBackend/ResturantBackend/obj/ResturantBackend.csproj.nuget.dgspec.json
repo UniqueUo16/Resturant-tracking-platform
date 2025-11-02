@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\documents\\project_spalt\\resturant-v.02\\resturantbackend\\resturantbackend\\ResturantBackend.csproj": {}
+    "C:\\Users\\User\\Documents\\Project_spalt\\resturant-v.02\\ResturantBackend\\ResturantBackend\\ResturantBackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\documents\\project_spalt\\resturant-v.02\\resturantbackend\\resturantbackend\\ResturantBackend.csproj": {
+    "C:\\Users\\User\\Documents\\Project_spalt\\resturant-v.02\\ResturantBackend\\ResturantBackend\\ResturantBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\documents\\project_spalt\\resturant-v.02\\resturantbackend\\resturantbackend\\ResturantBackend.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Documents\\Project_spalt\\resturant-v.02\\ResturantBackend\\ResturantBackend\\ResturantBackend.csproj",
         "projectName": "ResturantBackend",
-        "projectPath": "C:\\Users\\User\\documents\\project_spalt\\resturant-v.02\\resturantbackend\\resturantbackend\\ResturantBackend.csproj",
+        "projectPath": "C:\\Users\\User\\Documents\\Project_spalt\\resturant-v.02\\ResturantBackend\\ResturantBackend\\ResturantBackend.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\documents\\project_spalt\\resturant-v.02\\resturantbackend\\resturantbackend\\obj\\",
+        "outputPath": "C:\\Users\\User\\Documents\\Project_spalt\\resturant-v.02\\ResturantBackend\\ResturantBackend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"

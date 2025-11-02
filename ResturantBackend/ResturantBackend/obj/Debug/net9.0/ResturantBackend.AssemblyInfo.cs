@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ResturantBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3ab89a6f006729bad5f64f6fd35379e3b52022e0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0fbb79d25ec5dd4d81747d02a16f8f9234ef9108")]
 [assembly: System.Reflection.AssemblyProductAttribute("ResturantBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ResturantBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
