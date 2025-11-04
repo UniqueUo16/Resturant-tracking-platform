@@ -39,24 +39,7 @@ export default function Pricing() {
   return (
     <div className={`${Mon.className} p-8 max-w-6xl mx-auto bg-[orange] text-white relative min-h-screen`}>
       {/* ✅ Your pricing/hero/shipping sections would go here */}
-      <h1 className="text-3xl font-bold mb-6 text-amber-500">
-        Choose Your Shipping Plan
-      </h1>
-      <div className="grid sm:grid-cols-3 gap-6">
-        {shippingOptions.map((opt) => (
-          <div
-            key={opt.title}
-            className="bg-[#111] rounded-xl p-6 shadow-md border border-gray-800 hover:border-amber-500 transition"
-          >
-            <div className="flex items-center gap-3 mb-2">
-              {opt.icon}
-              <h2 className="text-lg font-semibold">{opt.title}</h2>
-            </div>
-            <p className="text-gray-400 text-sm mb-1">{opt.time}</p>
-            <p className="text-amber-500 font-semibold">{opt.price}</p>
-          </div>
-        ))}
-      </div>
+     
 
       {/* 🟨 Fixed Proceed Button */}
       <div className="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-gray-800 px-6 py-4 flex justify-between items-center z-40">
