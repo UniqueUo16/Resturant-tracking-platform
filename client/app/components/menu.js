@@ -12,7 +12,7 @@ export default function Menu() {
     useEffect(() => {
         async function fetchMenujs() {
             try {
-                const res = await fetch("https://resturant-tracking-platform-2.onrender.com/menujs");
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menujs`);
                 if (!res.ok) throw new Error("Failed To Fetch Menu");
                 const data = await res.json();
                 setMenujsData(data);

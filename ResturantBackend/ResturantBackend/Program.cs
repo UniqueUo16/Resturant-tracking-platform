@@ -7,7 +7,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "http://localhost:3000",
-                "https://resturantlogistics.vercel.app" // live frontend URL
+                "https://customresturant.vercel.app" // live frontend URL
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
