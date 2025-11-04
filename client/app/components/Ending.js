@@ -57,7 +57,7 @@ export default function End() {
 
           <motion.div
             className="flex flex-col md:ml-6 w-full md:w-1/2"
-            initial={{ opacity: 0, x: -100 }}
+            initial={{ opacity: 0, x: -10 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ ease: "easeInOut", duration: 0.8 }}
           >
