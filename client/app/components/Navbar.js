@@ -36,7 +36,7 @@ export default function Navbar() {
       {/* Top bar */}
       <div className="container mx-auto px-4 flex items-center justify-between py-4">
         {/* Logo */}
-        <Link href="/" className="text-yellow-300 text-2xl font-mono"> 🧩 logo</Link>
+        <Link href="/" className="text-yellow-300 flex-col sm:flex text-2xl font-mono"> 🧩 logo</Link>
 
         <input className="p-2 rounded-full border border-white text-black bg-white" placeholder="I'm thinking of 🧩"></input>
 
