@@ -39,7 +39,7 @@ export default function HeroCarousel() {
   const goToSlide = (index) => setCurrent(index);
 
   return (
-    <section className="relative w-full h-[80vh] sm:h-[90vh] overflow-hidden rounded-b-[4rem] sm:rounded-l-[11rem]">
+    <section className="relative w-full h-[80vh] sm:h-[90vh] overflow-hidden rounded-b-[14rem] sm:rounded-l-[11rem]">
       <AnimatePresence>
         {slides.map(
           (slide, index) =>

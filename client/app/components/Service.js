@@ -3,6 +3,12 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import { ArrowBigRightDashIcon, LoaderCircle } from "lucide-react"
 import { useEffect, useState } from "react"
+import { Montserrat } from "next/font/google"
+
+
+const font = Montserrat({
+  subsets:["latin"], weight:["300", "500", "700"]
+})
 
 export default function Newsletter() {
   const [loading, setLoading] = useState(true)
@@ -54,7 +60,7 @@ export default function Newsletter() {
         <span className="text-sm sm:text-base font-mono text-orange-400">
           {data.headingSmall}
         </span>
-        <span className="relative font-sans text-2xl sm:text-3xl before:content-['|'] before:absolute before:-left-2 before:animate-pulse">
+        <span className={`${font.className} "relative  text-2xl sm:text-3xl before:content-['|'] before:absolute before:-left-2 before:animate-pulse`}>
           {data.headingBig}
         </span>
         <p
@@ -76,7 +82,7 @@ export default function Newsletter() {
         ].map((item, idx) => (
           <motion.div
             key={item.title}
-            className="w-full sm:w-[300px] p-4 rounded-md shadow-lg hover:shadow-2xl transition-shadow duration-300 font-sans bg-[#0b0b0b]"
+            className="w-full sm:w-[300px] p-4 rounded shadow-lg hover:shadow-2xl transition-shadow duration-300 font-sans bg-[#000000b6]"
             initial={{ x: idx === 0 ? 10 : idx === 2 ? -10 : 0, opacity: 0 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
