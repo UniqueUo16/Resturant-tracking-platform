@@ -5,6 +5,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Truck, Airplay, Globe, X, MonitorPause } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Montserrat } from "next/font/google";
 
 const Mon = Montserrat({
@@ -148,12 +149,11 @@ export default function Pricing() {
                     <option value="Express">Book Table (1–2 days)</option>
                     <option value="Same-Day">Buy Food Delivery</option>
                   </select>
-                  <button
-                    type="submit"
+                  <Link href="/Ex/Checkpage"
                     className="w-full bg-amber-600 text-white font-semibold py-2 rounded-md hover:bg-amber-700 transition"
                   >
                     Confirm & Continue
-                  </button>
+                  </Link>
                 </form>
               )}
             </motion.div>
