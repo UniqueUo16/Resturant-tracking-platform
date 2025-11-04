@@ -54,6 +54,7 @@ export default function Menu() {
             </h2>
 
             {/* MAIN FLEX WRAPPER */}
+            <Link href="/Ex/Menu">
             <div className="flex flex-col sm:flex-row justify-center">
                 {/* LEFT COLUMN */}
                 <div className="flex-1">
@@ -207,11 +208,12 @@ export default function Menu() {
                     )}
                 </div>
             </div>
+            </Link>
 
             <div className="flex justify-center mt-10">
                 <Link
-                    href="/"
-                    className="border border-orange-300 px-6 py-3 text-white hover:bg-orange-500"
+                    href="/Ex/Menu"
+                    className="border rounded-full border-orange-300 px-6 py-3 text-white hover:bg-orange-500"
                 >
                     View Our Menu
                 </Link>

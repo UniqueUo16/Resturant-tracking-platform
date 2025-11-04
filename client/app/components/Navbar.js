@@ -14,6 +14,11 @@ import {
   Star,
   Clock,
 } from "lucide-react";
+import { Montserrat } from "next/font/google";
+
+const font = Montserrat({
+  subsets:["latin"],weight:["300", "600"]
+})
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,13 +32,13 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="absolute top-0 left-0 w-full z-50">
+    <header className={`${font.className} absolute top-0 left-0 w-full z-50 bg-[orange] stick`}>
       {/* Top bar */}
       <div className="container mx-auto px-4 flex items-center justify-between py-4">
         {/* Logo */}
-        <b className="text-yellow-300 text-2xl font-mono">Logo</b>
+        <Link href="/" className="text-yellow-300 text-2xl font-mono"> 🧩 logo</Link>
 
-        <input className="p-3 rounded-full border border-white text-white" placeholder="Search ?"></input>
+        <input className="p-2 rounded-full border border-white text-black bg-white" placeholder="I'm thinking of 🧩"></input>
 
         {/* Hamburger (mobile only) */}
         <button

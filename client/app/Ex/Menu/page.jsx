@@ -3,22 +3,22 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import {
-  ShoppingCart,
-  Plus,
-  Minus,
-  X,
-  Filter,
-} from "lucide-react";
+import { ShoppingCart, Plus, Minus, X } from "lucide-react";
+import useCartStore from "@/app/store/useCartStore";
+import Link from "next/link";
 
 export default function ShopPage() {
   const [menuItems, setMenuItems] = useState([]);
-  const [cart, setCart] = useState({});
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(true);
-  const [isCartOpen, setIsCartOpen] = useState(false); // 👈 for mobile cart drawer
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // ✅ Fetch menu from backend
+  // 🛒 Zustand cart store
+  const cart = useCartStore((state) => state.cart);
+  const addToCart = useCartStore((state) => state.addToCart);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+
+  // ✅ Fetch menu items from backend
   useEffect(() => {
     async function fetchMenu() {
       try {
@@ -35,31 +35,17 @@ export default function ShopPage() {
     fetchMenu();
   }, []);
 
-  const addToCart = (item) => {
-    setCart((prev) => ({
-      ...prev,
-      [item.id]: (prev[item.id] || 0) + 1,
-    }));
-  };
-
-  const removeFromCart = (item) => {
-    setCart((prev) => {
-      const newCart = { ...prev };
-      if (newCart[item.id] > 1) newCart[item.id]--;
-      else delete newCart[item.id];
-      return newCart;
-    });
-  };
-
+  // ✅ Filtered menu by category
   const filteredItems =
     filter === "All"
       ? menuItems
       : menuItems.filter((item) => item.category === filter);
 
-  const total = Object.entries(cart).reduce((acc, [id, qty]) => {
-    const item = menuItems.find((i) => i.id === Number(id));
-    return acc + (item?.price || 0) * qty;
-  }, 0);
+  // ✅ Calculate total price correctly (since cart stores objects)
+  const total = Object.values(cart).reduce(
+    (acc, item) => acc + item.price * item.qty,
+    0
+  );
 
   const categories = ["All", "Starters", "Main Course", "Desserts", "Drinks"];
 
@@ -72,7 +58,7 @@ export default function ShopPage() {
   }
 
   return (
-    <section className="min-h-screen bg-[#000000] text-gray-200 font-sans relative flex flex-col lg:flex-row">
+    <section className="min-h-screen bg-[#f3eded] text-gray-900 font-sans relative flex flex-col lg:flex-row">
       {/* 🛒 Desktop Cart Sidebar */}
       <motion.aside
         className="hidden lg:flex lg:w-[25%] bg-[#111] border-l border-gray-800 p-8 sticky top-0 h-screen flex-col justify-between"
@@ -82,7 +68,6 @@ export default function ShopPage() {
       >
         <CartContent
           cart={cart}
-          menuItems={menuItems}
           total={total}
           addToCart={addToCart}
           removeFromCart={removeFromCart}
@@ -97,12 +82,12 @@ export default function ShopPage() {
         <ShoppingCart size={22} />
       </button>
 
-      {/* 🛍️ Main Shop Area */}
+      {/* 🛍️ Product Grid */}
       <div className="flex-1 p-6 sm:p-8 lg:p-12 mt-20 lg:mt-0">
+        {/* Header + Filter */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
           <h1 className="text-3xl font-serif text-amber-500">Order Online</h1>
 
-          {/* Category Filters */}
           <div className="flex flex-wrap gap-2 mt-4 sm:mt-0">
             {categories.map((cat) => (
               <button
@@ -120,7 +105,7 @@ export default function ShopPage() {
           </div>
         </div>
 
-        {/* 🧁 Product Grid */}
+        {/* 🧁 Product Cards */}
         <motion.div
           layout
           className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8"
@@ -164,7 +149,7 @@ export default function ShopPage() {
       <AnimatePresence>
         {isCartOpen && (
           <motion.div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-end"
+            className="fixed inset-0 text-gray-200 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-end"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -190,7 +175,6 @@ export default function ShopPage() {
 
               <CartContent
                 cart={cart}
-                menuItems={menuItems}
                 total={total}
                 addToCart={addToCart}
                 removeFromCart={removeFromCart}
@@ -204,45 +188,47 @@ export default function ShopPage() {
 }
 
 /* 🧩 Cart Content Reusable Component */
-function CartContent({ cart, menuItems, total, addToCart, removeFromCart }) {
+function CartContent({ cart, total, addToCart, removeFromCart }) {
   return (
     <>
       <div className="space-y-4">
         {Object.keys(cart).length === 0 ? (
           <p className="text-gray-500 text-sm italic">Your cart is empty.</p>
         ) : (
-          Object.entries(cart).map(([id, qty]) => {
-            const item = menuItems.find((i) => i.id === Number(id));
-            return (
-              <div key={id} className="flex justify-between items-center">
-                <span className="text-sm">{item?.name}</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => removeFromCart(item)}
-                    className="p-1 border border-gray-600 rounded-full hover:border-amber-500"
-                  >
-                    <Minus size={12} />
-                  </button>
-                  <span className="text-sm">{qty}</span>
-                  <button
-                    onClick={() => addToCart(item)}
-                    className="p-1 border border-gray-600 rounded-full hover:border-amber-500"
-                  >
-                    <Plus size={12} />
-                  </button>
-                </div>
+          Object.values(cart).map((item) => (
+            <div key={item.id} className="flex justify-between items-center">
+              <span className="text-sm">{item.name}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => removeFromCart(item)}
+                  className="p-1 border border-gray-600 rounded-full hover:border-amber-500"
+                >
+                  <Minus size={12} />
+                </button>
+                <span className="text-sm">{item.qty}</span>
+                <button
+                  onClick={() => addToCart(item)}
+                  className="p-1 border border-gray-600 rounded-full hover:border-amber-500"
+                >
+                  <Plus size={12} />
+                </button>
               </div>
-            );
-          })
+            </div>
+          ))
         )}
       </div>
 
       <div className="border-t border-gray-700 mt-6 pt-4">
         <p className="text-gray-400 text-sm mb-2">Subtotal:</p>
-        <p className="text-lg font-semibold text-amber-500">${total.toFixed(2)}</p>
-        <button className="mt-4 w-full py-2 bg-amber-500 text-black rounded-full font-semibold hover:bg-amber-400 transition">
-          Proceed to Checkout
-        </button>
+        <p className="text-lg font-semibold text-amber-500">
+          ${total.toFixed(2)}
+        </p>
+
+        <Link href="/Ex/Checkpage">
+          <button className="mt-4 w-full py-2 bg-amber-500 text-black rounded-full font-semibold hover:bg-amber-400 transition">
+            🧩 Proceed to Checkout
+          </button>
+        </Link>
       </div>
     </>
   );

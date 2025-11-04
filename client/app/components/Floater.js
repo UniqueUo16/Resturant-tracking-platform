@@ -3,8 +3,13 @@
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Truck, Airplay, Globe, X } from "lucide-react";
+import { Truck, Airplay, Globe, X, MonitorPause } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Montserrat } from "next/font/google";
+
+const Mon = Montserrat({
+  subsets:["latin"], weight:["300", "500", "700"]
+})
 
 export default function Pricing() {
   const [form, setForm] = useState({ name: "", email: "", date: "", slot: "" });
@@ -31,7 +36,7 @@ export default function Pricing() {
   ];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto bg-black text-white relative min-h-screen">
+    <div className={`${Mon.className} p-8 max-w-6xl mx-auto bg-[orange] text-white relative min-h-screen`}>
       {/* ✅ Your pricing/hero/shipping sections would go here */}
       <h1 className="text-3xl font-bold mb-6 text-amber-500">
         Choose Your Shipping Plan
@@ -59,7 +64,7 @@ export default function Pricing() {
         </p>
         <button
           onClick={() => setOpen(true)}
-          className="bg-amber-500 text-black font-semibold px-5 py-2 rounded-full hover:bg-amber-400 transition"
+          className="bg-amber-500 text-black font-semibold px-5 py-2 rounded-lg hover:bg-amber-400 transition"
         >
           Proceed to Checkout
         </button>
