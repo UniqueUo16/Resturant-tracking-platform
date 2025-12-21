@@ -52,7 +52,7 @@ export default function Menu() {
       <div className="flex justify-center pb-6">
         <Image
           src="/imgs/separator.svg"
-          alt="storyimg"
+          alt="storyim"
           height={400}
           width={600}
           className="w-full md:w-1/2 h-auto"
