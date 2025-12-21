@@ -60,7 +60,7 @@ export default function Menu() {
       </div>
 
       {/* Title */}
-      <h2 className={`${baloo2.className} sm:text-3xl  text-4xl  flex justify-center mb-6`}>
+      <h2 className={`${baloo2.className} sm:text-3xl  text-3xl  flex justify-center mb-6`}>
         Our Delicious Menu
       </h2>
 
