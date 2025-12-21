@@ -4,11 +4,14 @@ import { motion } from "framer-motion"
 import { ArrowBigRightDashIcon, LoaderCircle } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Montserrat } from "next/font/google"
+import { Plus_Jakarta_Sans } from "next/font/google"
 
 
-const font = Montserrat({
+const jk = Plus_Jakarta_Sans({
   subsets:["latin"], weight:["300", "500", "700"]
 })
+
+
 
 export default function Newsletter() {
   const [loading, setLoading] = useState(true)
@@ -56,11 +59,11 @@ export default function Newsletter() {
       </div>
 
       {/* Heading Section */}
-      <div className="text-center uppercase flex flex-col items-center">
+      <div className="text-center  flex flex-col items-center">
         <span className="text-sm sm:text-base font-mono text-orange-400">
           {data.headingSmall}
         </span>
-        <span className={`${font.className} "relative  text-2xl sm:text-3xl before:content-['|'] before:absolute before:-left-2 before:animate-pulse`}>
+        <span className={`${jk.className} "relative text-2xl sm:text-3xl before:content-['|'] before:absolute before:-left-2 before:animate-pulse`}>
           {data.headingBig}
         </span>
         <p

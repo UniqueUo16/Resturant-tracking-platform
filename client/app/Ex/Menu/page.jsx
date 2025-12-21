@@ -58,7 +58,7 @@ export default function ShopPage() {
   }
 
   return (
-    <section className="min-h-screen bg-[#f3eded] text-gray-900 font-sans relative flex flex-col lg:flex-row">
+    <section className="min-h-screen bg-[#ececec] mt-12 text-gray-900 font-sans relative flex flex-col lg:flex-row">
       {/* 🛒 Desktop Cart Sidebar */}
       <motion.aside
         className="hidden lg:flex lg:w-[25%] bg-[#111] border-l border-gray-800 p-8 sticky top-0 h-screen flex-col justify-between"
@@ -113,7 +113,7 @@ export default function ShopPage() {
           {filteredItems.map((item) => (
             <motion.div
               key={item.id}
-              className="bg-[#111] rounded-lg p-4 flex flex-col justify-between shadow-md hover:shadow-[0_0_15px_rgba(255,191,0,0.1)] transition"
+              className="bg-[#1d1d1d] w-55 rounded p-4 flex flex-col justify-between shadow-md shadow-[black] transition"
               whileHover={{ scale: 1.03 }}
             >
               <Image
@@ -191,26 +191,28 @@ export default function ShopPage() {
 function CartContent({ cart, total, addToCart, removeFromCart }) {
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-4 mt-3">
+        <span className="text-gray-100 uppercase tracking-widest border-b ">items review</span>
+        <div></div>
         {Object.keys(cart).length === 0 ? (
-          <p className="text-gray-500 text-sm italic">Your cart is empty.</p>
+          <p className="text-gray-100 text-sm italic">Your cart is empty.</p>
         ) : (
           Object.values(cart).map((item) => (
             <div key={item.id} className="flex justify-between items-center">
-              <span className="text-sm">{item.name}</span>
+              <span className="text-sm text-gray-100 tracking-wider">{item.name}</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => removeFromCart(item)}
-                  className="p-1 border border-gray-600 rounded-full hover:border-amber-500"
+                  className="p-1 border border-gray-300 rounded-full hover:border-amber-500"
                 >
-                  <Minus size={12} />
+                  <Minus size={12} className="text-gray-100" />
                 </button>
-                <span className="text-sm">{item.qty}</span>
+                <span className="text-sm text-orange-400">{item.qty}</span>
                 <button
                   onClick={() => addToCart(item)}
-                  className="p-1 border border-gray-600 rounded-full hover:border-amber-500"
+                  className="p-1 border border-gray-300 rounded-full hover:border-amber-500"
                 >
-                  <Plus size={12} />
+                  <Plus size={12} className="text-gray-100"/>
                 </button>
               </div>
             </div>

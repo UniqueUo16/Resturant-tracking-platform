@@ -3,6 +3,17 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { Baloo_Bhaijaan_2 } from "next/font/google";
+import { Baloo_2 } from "next/font/google";
+
+const baloo2 = Baloo_Bhaijaan_2({
+  subsets:["latin"],
+  weight:["400", "500", "700"]
+})
+const baloo = Baloo_2({
+  subsets:["latin"],
+  weight:["400", "500", "700"]
+})
 
 const slides = [
   {
@@ -46,7 +57,7 @@ export default function HeroCarousel() {
             index === current && (
               <motion.div
                 key={slide.id}
-                className="absolute inset-0 w-full h-full"
+                className="absolute inset-0 w-full h-full mt-[]"
                 initial={{ opacity: 0, scale: 1.05 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
@@ -61,9 +72,9 @@ export default function HeroCarousel() {
                 />
 
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center text-white px-6">
+                <div className={`${baloo2.className} absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center text-white px-6`}>
                   <motion.h2
-                    className="text-3xl sm:text-6xl font-serif mb-3"
+                    className="text-3xl sm:text-6xl font-extrabold mb-3"
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3 }}
@@ -72,10 +83,9 @@ export default function HeroCarousel() {
                   </motion.h2>
 
                   <motion.p
-                    className="text-base sm:text-lg max-w-[600px]"
-                    initial={{ y: 40, opacity: 0 }}
+                    className={`${baloo2.className} text-base sm:text-lg max-w-[600px]                    initial={{ y: 40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.5 }}
+                    transition={{ delay: 0.5 }} `}
                   >
                     {slide.description}
                   </motion.p>
@@ -94,12 +104,13 @@ export default function HeroCarousel() {
       </AnimatePresence>
 
       {/* Floating review bubbles (small screens optimized) */}
-      <div className="absolute bottom-24 left-4 sm:left-[8rem] space-y-3 sm:space-y-6">
+      <div className="absolute bottom-12 left-4 sm:left-[8rem] space-y-4 sm:space-y-6">
         <motion.div
           animate={{ y: [0, -15, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        
         >
-          <button className="flex items-center gap-3 text-[0.8rem] sm:text-base bg-orange-500 text-white py-2 px-4 rounded-full shadow-lg">
+          <button className={`${baloo.className} flex  items-center gap-3 text-[0.8rem] sm:text-base bg-orange-500 text-white py-2 px-4 rounded-full shadow-lg`}>
             <Image
               src="/imgs/features-icon-1.png"
               alt="reviewer"
@@ -115,7 +126,7 @@ export default function HeroCarousel() {
           animate={{ y: [0, -30, 0] }}
           transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <button className="flex items-center gap-3 text-[0.8rem] sm:text-base bg-black text-white py-2 px-4 rounded-full border border-orange-400">
+          <button className={`${baloo.className} flex items-center gap-3 text-[0.8rem] sm:text-base bg-black text-white py-2 px-4 rounded-full border border-orange-400`}>
             <span>Top service — 10/10! 😋</span>
             <Image
               src="/imgs/badge-2.png"
