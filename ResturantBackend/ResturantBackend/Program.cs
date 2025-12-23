@@ -52,7 +52,7 @@ app.MapGet("/", () => "🍽️ Welcome to Unique Uo’s Restaurant API!");
 app.MapGet("/services", () => new
 {
     headingSmall = "Greek Salad",
-    headingBig = "Lorem 🍽️ Welcome to Unique Uo’s Restaurant API!",
+    headingBig = "Lorem Welcome to Unique Uo’s Restaurant API!",
     description1 = "Greek Salad",
     description2 = "Lorem",
     img1 = "/imgs/service-1.jpg",
