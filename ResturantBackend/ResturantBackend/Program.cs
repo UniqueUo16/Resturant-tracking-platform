@@ -26,7 +26,14 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SMTP"));
+var smtp = builder.Configuration.GetSection("SMTP").Get<SmtpSettings>();
+
+Console.WriteLine("SMTP CHECK:");
+Console.WriteLine($"Host: {smtp?.Host}");
+Console.WriteLine($"Port: {smtp?.Port}");
+Console.WriteLine($"Email: {smtp?.Email}");
+Console.WriteLine($"Owner: {smtp?.OwnerEmail}");
+
 
 // ✅ DATABASE CONNECTION
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL")
@@ -112,23 +119,27 @@ app.MapGet("/story", () => new
     storytxt1 = "Lorem ipsum dolor sit amet consectetur adipisicing elit...",
     storytxt2 = "Lorem ipsum dolor sit amet consectetur adipisicing elit..."
 });
-
 app.MapPost("/reserve", async (
     AppDbContext db,
     Reservation res,
     IConfiguration config) =>
 {
-    // Ensure UTC for Postgres
+    Console.WriteLine("📩 Reserve endpoint hit");
+
     res.Date = res.Date.ToUniversalTime();
 
     db.Reservations.Add(res);
     await db.SaveChangesAsync();
 
-    // Fire-and-forget email
-    _ = SendReservationEmailAsync(res, config);
+    Console.WriteLine("📩 Reservation saved, sending email...");
+
+    await SendReservationEmailAsync(res, config);
+
+    Console.WriteLine("📩 Email function completed");
 
     return Results.Created($"/reservations/{res.Id}", res);
 });
+
 
 
 // --- Email function ---
