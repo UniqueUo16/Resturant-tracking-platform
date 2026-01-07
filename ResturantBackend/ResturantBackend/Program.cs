@@ -120,25 +120,33 @@ app.MapGet("/story", () => new
     storytxt1 = "Lorem ipsum dolor sit amet consectetur adipisicing elit...",
     storytxt2 = "Lorem ipsum dolor sit amet consectetur adipisicing elit..."
 });
-app.MapPost("/reserve", async (AppDbContext db, Reservation res) =>
+
+app.MapPost("/reserve", async (
+    AppDbContext db,
+    Reservation res,
+    IConfiguration config) =>
 {
+    Console.WriteLine("📩 Reserve endpoint hit");
+
+    // Ensure UTC for Postgres
     res.Date = res.Date.ToUniversalTime();
 
+    // Save reservation
     db.Reservations.Add(res);
     await db.SaveChangesAsync();
 
     Console.WriteLine("📩 Reservation saved, sending email...");
 
-    await SendReservationEmailResendAsync(res);
+    // Send emails via Resend
+    await SendReservationEmailResendAsync(res, config);
 
     Console.WriteLine("📩 Email function completed");
 
     return Results.Created($"/reservations/{res.Id}", res);
 });
 
-
-// --- Email function ---
-async Task SendReservationEmailResendAsync(Reservation res)
+// --- Resend Email Function ---
+async Task SendReservationEmailResendAsync(Reservation res, IConfiguration config)
 {
     try
     {
@@ -148,13 +156,13 @@ async Task SendReservationEmailResendAsync(Reservation res)
 
         if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(fromEmail))
         {
-            Console.WriteLine("Resend API key or From email not set.");
+            Console.WriteLine("❌ Resend API key or From email not set.");
             return;
         }
 
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", apiKey);
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
         // --- Customer Email ---
         var customerBody = new
@@ -171,15 +179,15 @@ async Task SendReservationEmailResendAsync(Reservation res)
                 <p>Thank you for booking with Unique Dine!</p>"
         };
 
-        var customerJson = new StringContent(JsonSerializer.Serialize(customerBody), Encoding.UTF8, "application/json");
+        var customerJson = new StringContent(System.Text.Json.JsonSerializer.Serialize(customerBody), Encoding.UTF8, "application/json");
         var customerResponse = await client.PostAsync("https://api.resend.com/emails", customerJson);
 
         if (!customerResponse.IsSuccessStatusCode)
         {
-            Console.WriteLine($"Customer email failed: {await customerResponse.Content.ReadAsStringAsync()}");
+            Console.WriteLine($"❌ Customer email failed: {await customerResponse.Content.ReadAsStringAsync()}");
         }
 
-        // --- Owner Email ---
+        // --- Owner/Admin Email ---
         if (!string.IsNullOrWhiteSpace(ownerEmail))
         {
             var ownerBody = new
@@ -198,47 +206,23 @@ async Task SendReservationEmailResendAsync(Reservation res)
                     {(string.IsNullOrWhiteSpace(res.SpecialRequests) ? "" : $"<p>💌 Requests: {res.SpecialRequests}</p>")}"
             };
 
-            var ownerJson = new StringContent(JsonSerializer.Serialize(ownerBody), Encoding.UTF8, "application/json");
+            var ownerJson = new StringContent(System.Text.Json.JsonSerializer.Serialize(ownerBody), Encoding.UTF8, "application/json");
             var ownerResponse = await client.PostAsync("https://api.resend.com/emails", ownerJson);
 
             if (!ownerResponse.IsSuccessStatusCode)
             {
-                Console.WriteLine($"Owner email failed: {await ownerResponse.Content.ReadAsStringAsync()}");
+                Console.WriteLine($"❌ Owner email failed: {await ownerResponse.Content.ReadAsStringAsync()}");
             }
         }
 
-        Console.WriteLine($"Emails sent to {res.Email}" + (string.IsNullOrWhiteSpace(ownerEmail) ? "" : $" and owner ({ownerEmail})"));
+        Console.WriteLine($"✅ Emails sent to {res.Email}" + (string.IsNullOrWhiteSpace(ownerEmail) ? "" : $" and owner ({ownerEmail})"));
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Resend email error: {ex}");
+        Console.WriteLine($"❌ Resend email error: {ex}");
     }
 }
-
-
-
-app.MapGet("/menu", () => new[]
-{
-    new { id = 1, name = "Greek Salad", price = 25.5, img = "/imgs/menu-1.png", category = "Starters" },
-    new { id = 2, name = "Pasta Carbonara", price = 30.0, img = "/imgs/menu-2.png", category = "Main Course" },
-    new { id = 3, name = "Chocolate Cake", price = 15.0, img = "/imgs/menu-6.png", category = "Desserts" },
-    new { id = 4, name = "Château Margaux Wine (Glass)", price = 30.0, img = "/imgs/menu-4.png", category = "Drinks" }
-});
-
-app.MapPost("/order", async (HttpContext context) =>
-{
-    var order = await context.Request.ReadFromJsonAsync<Order>();
-    if (order is null || order.Items.Count == 0)
-        return Results.BadRequest(new { message = "Invalid order data." });
-
-    Console.WriteLine($"Order from {order.CustomerName}, Total: ${order.Total}");
-
-    return Results.Ok(new
-    {
-        message = "Order received successfully!!",
-        orderId = Guid.NewGuid()
-    });
-});
+;
 
 app.Run();
 
