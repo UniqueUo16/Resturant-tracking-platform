@@ -4,8 +4,9 @@ using MyApp.Models;
 using ResturantBackend.Models;
 using MailKit.Net.Smtp;
 using MimeKit;
-using Microsoft.AspNetCore.Http.HttpResults;
-
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ CORS
@@ -119,13 +120,8 @@ app.MapGet("/story", () => new
     storytxt1 = "Lorem ipsum dolor sit amet consectetur adipisicing elit...",
     storytxt2 = "Lorem ipsum dolor sit amet consectetur adipisicing elit..."
 });
-app.MapPost("/reserve", async (
-    AppDbContext db,
-    Reservation res,
-    IConfiguration config) =>
+app.MapPost("/reserve", async (AppDbContext db, Reservation res) =>
 {
-    Console.WriteLine("📩 Reserve endpoint hit");
-
     res.Date = res.Date.ToUniversalTime();
 
     db.Reservations.Add(res);
@@ -133,7 +129,7 @@ app.MapPost("/reserve", async (
 
     Console.WriteLine("📩 Reservation saved, sending email...");
 
-    await SendReservationEmailAsync(res, config);
+    await SendReservationEmailResendAsync(res);
 
     Console.WriteLine("📩 Email function completed");
 
@@ -141,170 +137,83 @@ app.MapPost("/reserve", async (
 });
 
 
-
 // --- Email function ---
-async Task SendReservationEmailAsync(Reservation res, IConfiguration config)
+async Task SendReservationEmailResendAsync(Reservation res)
 {
     try
     {
-        var smtp = config.GetSection("SMTP").Get<SmtpSettings>();
-        if (smtp == null) { Console.WriteLine("SMTP section missing."); return; }
-        if (string.IsNullOrWhiteSpace(smtp.Email)) { Console.WriteLine("SMTP Email missing."); return; }
-        if (string.IsNullOrWhiteSpace(res.Email)) { Console.WriteLine("Customer email missing."); return; }
+        var apiKey = Environment.GetEnvironmentVariable("RESEND_API_KEY");
+        var fromEmail = Environment.GetEnvironmentVariable("RESEND_FROM_EMAIL");
+        var ownerEmail = Environment.GetEnvironmentVariable("OWNER_EMAIL");
 
-        // --- Customer Email ---
-        var customerMessage = new MimeMessage();
-        customerMessage.From.Add(new MailboxAddress("Unique Dine", smtp.Email));
-        customerMessage.To.Add(new MailboxAddress(res.FullName, res.Email));
-        customerMessage.Subject = "Reservation Confirmed!";
-
-        var customerHtml = $@"
-<html>
-  <body style='margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f5f5f5;'>
-    <table align='center' width='100%' style='max-width:600px; background-color:#ffffff; border-radius:15px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.1);'>
-      <!-- Hero Image -->
-      <tr>
-        <td style='text-align:center;'>
-          <img src='https://resturant-v02.vercel.app/img/about-banner.jpg' alt='Uninque Uo Dine' width='100%' style='display:block; border-bottom:4px solid #d97706;'/>
-        </td>
-      </tr>
-      <!-- Header -->
-      <tr>
-        <td style='padding:30px 25px; text-align:center;'>
-          <h1 style='font-family: Georgia, serif; color:#d97706;'>Reservation Confirmed!</h1>
-          <p>Hi {res.FullName}, thank you for booking with us.</p>
-        </td>
-      </tr>
-      <!-- Reservation Details -->
-      <tr>
-        <td style='padding:15px 25px;'>
-          <table width='100%' style='font-size:16px; color:#333; border-collapse:collapse;'>
-            <tr><td>📅 Date:</td><td>{res.Date:dd/MM/yyyy}</td></tr>
-            <tr><td>⏰ Time:</td><td>{res.Time}</td></tr>
-            <tr><td>👥 Guests:</td><td>{res.Guests}</td></tr>
-            {(string.IsNullOrWhiteSpace(res.SpecialRequests) ? "" : $"<tr><td>💌 Requests:</td><td>{res.SpecialRequests}</td></tr>")}
-          </table>
-        </td>
-      </tr>
-      <!-- CTA -->
-      <tr>
-        <td style='padding:20px 25px; text-align:center;'>
-          <a href='https://yourwebsite.com/menu' style='background:linear-gradient(90deg,#d97706,#fbbf24); color:#fff; padding:14px 35px; font-size:16px; font-weight:bold; text-decoration:none; border-radius:30px;'>Explore Our Menu</a>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>
-";
-
-        customerMessage.Body = new TextPart("html") { Text = customerHtml };
-
-        // --- Owner Email (optional) ---
-        MimeMessage? ownerMessage = null;
-        if (!string.IsNullOrWhiteSpace(smtp.OwnerEmail))
+        if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(fromEmail))
         {
-            ownerMessage = new MimeMessage();
-            ownerMessage.From.Add(new MailboxAddress("Unique Dine", smtp.Email));
-            ownerMessage.To.Add(MailboxAddress.Parse(smtp.OwnerEmail));
-            ownerMessage.Subject = $"New Booking: {res.FullName}";
-
-            ownerMessage.Body = new TextPart("html")
-            {
-      Text = $@"
-<html>
-  <body style='margin:0; padding:0; font-family: Arial, sans-serif; background-color:#111827;'>
-
-    <table align='center' width='100%' style='max-width:600px; background-color:#0b0b0b; border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.4);'>
-      
-      <!-- Header -->
-      <tr>
-        <td style='padding:24px; text-align:center; background:#000; border-bottom:2px solid #d97706;'>
-          <h2 style='margin:0; font-family:Georgia, serif; color:#d97706;'>
-            New Reservation Alert
-          </h2>
-          <p style='margin:6px 0 0; color:#9ca3af; font-size:14px;'>
-            A new booking has just been made
-          </p>
-        </td>
-      </tr>
-
-      <!-- Details -->
-      <tr>
-        <td style='padding:24px;'>
-          <table width='100%' style='color:#e5e7eb; font-size:15px;'>
-            <tr>
-              <td style='padding:8px 0; font-weight:bold;'>👤 Guest</td>
-              <td style='padding:8px 0;'>{res.FullName}</td>
-            </tr>
-            <tr>
-              <td style='padding:8px 0; font-weight:bold;'>📧 Email</td>
-              <td style='padding:8px 0;'>{res.Email}</td>
-            </tr>
-            <tr>
-              <td style='padding:8px 0; font-weight:bold;'>📞 Phone</td>
-              <td style='padding:8px 0;'>{res.Phone}</td>
-            </tr>
-            <tr>
-              <td style='padding:8px 0; font-weight:bold;'>📅 Date</td>
-              <td style='padding:8px 0;'>{res.Date:dd/MM/yyyy}</td>
-            </tr>
-            <tr>
-              <td style='padding:8px 0; font-weight:bold;'>⏰ Time</td>
-              <td style='padding:8px 0;'>{res.Time}</td>
-            </tr>
-            <tr>
-              <td style='padding:8px 0; font-weight:bold;'>👥 Guests</td>
-              <td style='padding:8px 0;'>{res.Guests}</td>
-            </tr>
-
-            {(string.IsNullOrWhiteSpace(res.SpecialRequests) ? "" : $@"
-            <tr>
-              <td style='padding:8px 0; font-weight:bold;'>💌 Requests</td>
-              <td style='padding:8px 0;'>{res.SpecialRequests}</td>
-            </tr>
-            ")}
-          </table>
-        </td>
-      </tr>
-
-      <!-- Footer -->
-      <tr>
-        <td style='padding:18px; text-align:center; background:#000; color:#9ca3af; font-size:13px;'>
-          <p style='margin:0;'>Unique Dine — Admin Notification</p>
-          <p style='margin:4px 0 0; font-style:italic; color:#d97706;'>
-            Precision dining. Zero missed tables.
-          </p>
-        </td>
-      </tr>
-
-    </table>
-
-  </body>
-</html>
-"
-
-            };
+            Console.WriteLine("Resend API key or From email not set.");
+            return;
         }
 
-        // --- Connect Once, Send Both Emails, Disconnect ---
-        using var client = new SmtpClient();
-        await client.ConnectAsync(smtp.Host, smtp.Port, MailKit.Security.SecureSocketOptions.StartTls);
-        await client.AuthenticateAsync(smtp.Email, smtp.Password);
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", apiKey);
 
-        await client.SendAsync(customerMessage);
-        if (ownerMessage != null)
-            await client.SendAsync(ownerMessage);
+        // --- Customer Email ---
+        var customerBody = new
+        {
+            from = fromEmail,
+            to = res.Email,
+            subject = "Reservation Confirmed!",
+            html = $@"
+                <h2>Hi {res.FullName}, your reservation is confirmed!</h2>
+                <p>📅 Date: {res.Date:dd/MM/yyyy}</p>
+                <p>⏰ Time: {res.Time}</p>
+                <p>👥 Guests: {res.Guests}</p>
+                {(string.IsNullOrWhiteSpace(res.SpecialRequests) ? "" : $"<p>💌 Requests: {res.SpecialRequests}</p>")}
+                <p>Thank you for booking with Unique Dine!</p>"
+        };
 
-        await client.DisconnectAsync(true);
+        var customerJson = new StringContent(JsonSerializer.Serialize(customerBody), Encoding.UTF8, "application/json");
+        var customerResponse = await client.PostAsync("https://api.resend.com/emails", customerJson);
 
-        Console.WriteLine($"Emails sent to {res.Email}" + (ownerMessage != null ? $" and owner ({smtp.OwnerEmail})" : ""));
+        if (!customerResponse.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Customer email failed: {await customerResponse.Content.ReadAsStringAsync()}");
+        }
+
+        // --- Owner Email ---
+        if (!string.IsNullOrWhiteSpace(ownerEmail))
+        {
+            var ownerBody = new
+            {
+                from = fromEmail,
+                to = ownerEmail,
+                subject = $"New Reservation: {res.FullName}",
+                html = $@"
+                    <h2>New Reservation Alert</h2>
+                    <p>👤 Guest: {res.FullName}</p>
+                    <p>📧 Email: {res.Email}</p>
+                    <p>📞 Phone: {res.Phone}</p>
+                    <p>📅 Date: {res.Date:dd/MM/yyyy}</p>
+                    <p>⏰ Time: {res.Time}</p>
+                    <p>👥 Guests: {res.Guests}</p>
+                    {(string.IsNullOrWhiteSpace(res.SpecialRequests) ? "" : $"<p>💌 Requests: {res.SpecialRequests}</p>")}"
+            };
+
+            var ownerJson = new StringContent(JsonSerializer.Serialize(ownerBody), Encoding.UTF8, "application/json");
+            var ownerResponse = await client.PostAsync("https://api.resend.com/emails", ownerJson);
+
+            if (!ownerResponse.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Owner email failed: {await ownerResponse.Content.ReadAsStringAsync()}");
+            }
+        }
+
+        Console.WriteLine($"Emails sent to {res.Email}" + (string.IsNullOrWhiteSpace(ownerEmail) ? "" : $" and owner ({ownerEmail})"));
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Email error: {ex}");
+        Console.WriteLine($"Resend email error: {ex}");
     }
 }
-
 
 
 
