@@ -85,7 +85,7 @@ export default function End() {
             </p>
 
             <motion.a
-              href="/Ex/Reservations"
+              href="/Ex/Reservation"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
               className="inline-block bg-amber-500 text-black px-6 py-3 rounded-full font-semibold shadow-md hover:bg-amber-400 transition"

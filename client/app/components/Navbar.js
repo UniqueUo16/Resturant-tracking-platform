@@ -27,7 +27,7 @@ export default function Navbar() {
   const navItems = [
     { name: "Home", icon: <Utensils size={16} />, link: "/" },
     { name: "Menu", icon: <Star size={16} />, link: "/Ex/Menu" },
-    { name: "Reservations", icon: <CalendarDays size={16} />, link: "/Ex/Reservations" },
+    { name: "Reservations", icon: <CalendarDays size={16} />, link: "/Ex/Reservation" },
     { name: "About", icon: <Info size={16} />, link: "/Ex/About" },
     { name: "Contact", icon: <Phone size={16} />, link: "/Ex/Contact" },
   ];

@@ -43,15 +43,15 @@ export default function Pricing() {
 
       {/* 🟨 Fixed Proceed Button */}
       <div className="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-gray-800 px-6 py-4 flex justify-between items-center z-40">
-        <p className="text-gray-300 text-sm">
-          Ready to proceed with your order?
+        <p  className="text-gray-300 text-sm">
+          Ready to proceed with your order? 
         </p>
-        <button
+        <Link href="/Payment-portal"
           onClick={() => setOpen(true)}
           className="bg-amber-500 text-black font-semibold px-5 py-2 rounded-lg hover:bg-amber-400 transition"
         >
           Proceed to Checkout
-        </button>
+        </Link>
       </div>
 
       {/* 🧾 Bottom Slide-Up Checkout Form */}
@@ -72,9 +72,10 @@ export default function Pricing() {
             >
               {/* Header */}
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-amber-600">
-                  Checkout Form
-                </h2>
+                <h2 className="text-xl font-serif text-amber-600">
+  Confirm Your Reservation
+</h2>
+
                 <button
                   onClick={() => setOpen(false)}
                   className="text-gray-500 hover:text-amber-500 transition"
@@ -86,58 +87,74 @@ export default function Pricing() {
               {submitted ? (
                 <div className="text-center py-8">
                   <p className="text-green-600 font-semibold">
-                    ✅ Booking Confirmed!
-                  </p>
-                  <p className="text-gray-500 text-sm mt-2">
-                    Redirecting to Booking Page...
-                  </p>
+  ✨ Reservation Confirmed
+</p>
+<p className="text-gray-500 text-sm mt-2">
+  We look forward to welcoming you.
+</p>
+
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-3">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Full Name"
-                    value={form.name}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    required
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email Address"
-                    value={form.email}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    required
-                  />
-                  <input
-                    type="date"
-                    name="date"
-                    value={form.date}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    required
-                  />
-                  <select
-                    name="slot"
-                    value={form.slot}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    required
-                  >
-                    <option value="">Select Service Type</option>
-                    <option value="Standard">📦 Book Food (3–5 days)</option>
-                    <option value="Express">Book Table (1–2 days)</option>
-                    <option value="Same-Day">Buy Food Delivery</option>
-                  </select>
-                  <Link href="/Ex/Checkpage"
-                    className="w-full bg-amber-600 text-white font-semibold py-2 rounded-md hover:bg-amber-700 transition"
-                  >
-                    Confirm & Continue
-                  </Link>
-                </form>
+  <input
+    type="text"
+    name="name"
+    placeholder="Guest Name"
+    value={form.name}
+    onChange={handleChange}
+    className="input-light"
+    required
+  />
+
+  <input
+    type="tel"
+    name="phone"
+    placeholder="Phone Number"
+    value={form.phone}
+    onChange={handleChange}
+    className="input-light"
+    required
+  />
+
+  <input
+    type="email"
+    name="email"
+    placeholder="Email (optional)"
+    value={form.email}
+    onChange={handleChange}
+    className="input-light"
+  />
+
+  <input
+    type="date"
+    name="date"
+    value={form.date}
+    onChange={handleChange}
+    className="input-light"
+    required
+  />
+
+  <select
+    name="slot"
+    value={form.slot}
+    onChange={handleChange}
+    className="input-light"
+    required
+  >
+    <option value="">Preferred Dining Time</option>
+    <option value="early-evening">Early Evening (5:00 – 6:30 PM)</option>
+    <option value="evening">Evening (6:30 – 8:00 PM)</option>
+    <option value="late-evening">Late Evening (8:00 – 10:00 PM)</option>
+  </select>
+
+  <Link
+    href="/Ex/Checkpage"
+    className="block text-center w-full bg-amber-600 text-white font-semibold py-3 rounded-md hover:bg-amber-700 transition"
+  >
+    Confirm Reservation
+  </Link>
+</form>
+
               )}
             </motion.div>
           </motion.div>
