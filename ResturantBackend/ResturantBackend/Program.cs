@@ -2,9 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MyApp.Data;
 using MyApp.Models;
 using ResturantBackend.Models;
-using SendGrid;
-using SendGrid.Helpers.Mail;
-using System.Text.Json;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -106,83 +104,29 @@ app.MapGet("/story", () => new
 // ✅ Reserve endpoint with SendGrid
 app.MapPost("/reserve", async (AppDbContext db, Reservation res) =>
 {
-    Console.WriteLine("📩 Reserve endpoint hit");
-
     res.Date = res.Date.ToUniversalTime();
     db.Reservations.Add(res);
     await db.SaveChangesAsync();
-    Console.WriteLine("📩 Reservation saved, sending email...");
 
-    await SendReservationEmailSendGridAsync(res);
-
-    Console.WriteLine("📩 Email function completed");
+    // Call Vercel function to send emails
+    try
+    {
+        var vercelFnUrl = "https://resturant-v02.vercel.app/api/send-email";
+        using var http = new HttpClient();
+        var response = await http.PostAsJsonAsync(vercelFnUrl, res);
+        if (!response.IsSuccessStatusCode)
+            Console.WriteLine($"❌ Vercel email function failed: {response.StatusCode}");
+        else
+            Console.WriteLine("✅ Emails sent via Vercel function");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Error calling Vercel function: {ex}");
+    }
 
     return Results.Created($"/reservations/{res.Id}", res);
 });
 
-// --- SendGrid Email Function ---
-async Task SendReservationEmailSendGridAsync(Reservation res)
-{
-    try
-    {
-        var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
-        var fromEmail = Environment.GetEnvironmentVariable("SENDGRID_FROM_EMAIL");
-        var ownerEmail = Environment.GetEnvironmentVariable("OWNER_EMAIL");
-
-        if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(fromEmail))
-        {
-            Console.WriteLine("❌ SendGrid API key or From email not set.");
-            return;
-        }
-
-        var client = new SendGridClient(apiKey);
-        var from = new EmailAddress(fromEmail, "Unique Dine");
-
-        // --- Customer Email ---
-        var subject = "Reservation Confirmed!";
-        var to = new EmailAddress(res.Email, res.FullName);
-        var htmlContent = $@"
-            <h2>Hi {res.FullName}, your reservation is confirmed!</h2>
-            <p>📅 Date: {res.Date:dd/MM/yyyy}</p>
-            <p>⏰ Time: {res.Time}</p>
-            <p>👥 Guests: {res.Guests}</p>
-            {(string.IsNullOrWhiteSpace(res.SpecialRequests) ? "" : $"<p>💌 Requests: {res.SpecialRequests}</p>")}
-            <p>Thank you for booking with Unique Dine!</p>";
-        var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
-        var response = await client.SendEmailAsync(msg);
-        if (response.StatusCode != System.Net.HttpStatusCode.Accepted)
-            Console.WriteLine($"❌ Customer email failed: {response.StatusCode}");
-
-        // --- Owner/Admin Email ---
-        if (!string.IsNullOrWhiteSpace(ownerEmail))
-        {
-            var ownerMsg = MailHelper.CreateSingleEmail(
-                from,
-                new EmailAddress(ownerEmail),
-                $"New Reservation: {res.FullName}",
-                "",
-                $@"
-                <h2>New Reservation Alert</h2>
-                <p>👤 Guest: {res.FullName}</p>
-                <p>📧 Email: {res.Email}</p>
-                <p>📞 Phone: {res.Phone}</p>
-                <p>📅 Date: {res.Date:dd/MM/yyyy}</p>
-                <p>⏰ Time: {res.Time}</p>
-                <p>👥 Guests: {res.Guests}</p>
-                {(string.IsNullOrWhiteSpace(res.SpecialRequests) ? "" : $"<p>💌 Requests: {res.SpecialRequests}</p>")}")
-            ;
-            var ownerResponse = await client.SendEmailAsync(ownerMsg);
-            if (ownerResponse.StatusCode != System.Net.HttpStatusCode.Accepted)
-                Console.WriteLine($"❌ Owner email failed: {ownerResponse.StatusCode}");
-        }
-
-        Console.WriteLine($"✅ Emails sent to {res.Email}" + (string.IsNullOrWhiteSpace(ownerEmail) ? "" : $" and owner ({ownerEmail})"));
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ SendGrid email error: {ex}");
-    }
-}
 
 app.Run();
 
