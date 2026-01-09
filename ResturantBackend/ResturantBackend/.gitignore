@@ -1,0 +1,54 @@
+# Build output
+bin/
+obj/
+out/
+artifacts/
+node_modules/
+
+# User / IDE files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+.idea/
+
+# .NET artifacts
+*.exe
+*.dll
+*.pdb
+*.cache
+project.lock.json
+project.fragment.lock.json
+# Node / frontend
+node_modules/
+dist/
+
+# Environment & secrets
+.env
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Local.json
+appsettings.json
+secrets.json
+
+# Databases
+*.db
+*.db-shm
+*.db-wal
+
+# Logs & temp
+*.log
+logs/
+*.bak
+*.tmp
+*.temp
+*.old
+
+# Docker overrides
+docker-compose.override.yml
+docker-compose.local.yml
+
+# System
+Thumbs.db
+.DS_Store
