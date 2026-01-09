@@ -5,7 +5,6 @@ import { useState } from "react";
 
 export default function Reservation() {
   const [submitting, setSubmitting] = useState(false);
-
   const [form, setForm] = useState({
     FullName: "",
     Email: "",
@@ -55,70 +54,71 @@ export default function Reservation() {
   };
 
   return (
-    <div className="full-reserve bg-center bg-contain min-h-screen flex flex-col">
-      <div className="px-6 sm:px-16 py-12 max-w-7xl mx-auto bg-black/50 rounded-lg">
-        <span className="font-mono text-sm sm:text-base" style={{ fontVariant: "small-caps" }}>
-          Full Reservation Page
-        </span>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start mt-12">
+    <div className="min-h-screen bg-cover bg-center py-12 px-4 sm:px-8 md:px-16 flex flex-col items-center justify-center">
+      <div className="w-full max-w-7xl mx-auto bg-black/60 rounded-2xl p-6 sm:p-10 shadow-lg">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-20 items-start">
           {/* Left Content */}
-          <div className="flex flex-col justify-center text-center lg:text-left">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Reserve Your Seat at the Table
-            </h2>
-            <p className="mt-2 text-gray-300 leading-relaxed">
+          <div className="flex flex-col justify-center text-center lg:text-left flex-1">
+            <h1 className="text-4xl sm:text-5xl font-bold text-amber-400 mb-4">
+              Reserve Your Seat
+            </h1>
+            <p className="text-gray-300 mb-2 leading-relaxed">
               Step into an atmosphere where flavor, craft, and elegance meet.
             </p>
-            <p className="mt-2 text-gray-300 leading-relaxed">
+            <p className="text-gray-300 mb-2 leading-relaxed">
               Each reservation is carefully curated.
             </p>
-            <p className="mt-2 text-gray-300 leading-relaxed">
+            <p className="text-gray-300 mb-6 leading-relaxed">
               Our kitchen operates with precision and passion.
             </p>
-
-            <button className="mt-6 px-6 py-3 bg-white text-black shadow-md hover:bg-gray-100 rounded-sm self-center lg:self-start">
-              Navigate Our Menu
-            </button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="self-center lg:self-start bg-amber-500 text-black font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-amber-400 transition"
+            >
+              Explore Our Menu
+            </motion.button>
           </div>
 
           {/* Reservation Form */}
-          <section className="w-full max-w-xl mx-auto lg:mx-0 bg-[#0b0b0b] border border-amber-500/20 rounded-3xl p-6 sm:p-8 shadow-2xl">
+          <section className="flex-1 w-full max-w-md lg:max-w-full bg-[#0b0b0b] border border-amber-500/20 rounded-3xl p-6 sm:p-10 shadow-2xl">
             <header className="mb-6 text-center lg:text-left">
-              <h2 className="text-2xl font-serif text-amber-400">Reserve a Table</h2>
-              <p className="text-sm text-gray-400 mt-1">Select your preferred date and time.</p>
+              <h2 className="text-2xl font-serif text-amber-400 mb-1">Reserve a Table</h2>
+              <p className="text-sm text-gray-400">
+                Select your preferred date and time.
+              </p>
             </header>
 
             {/* Reservation Details */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-              <div>
-                <label className="text-xs text-gray-400">Date</label>
+              <div className="flex flex-col">
+                <label className="text-xs text-gray-400 mb-1">Date</label>
                 <input
                   type="date"
                   value={form.Date}
                   onChange={e => setForm({ ...form, Date: e.target.value })}
-                  className="input mt-1 w-full"
+                  className="input px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-amber-400"
                 />
               </div>
 
-              <div>
-                <label className="text-xs text-gray-400">Time</label>
+              <div className="flex flex-col">
+                <label className="text-xs text-gray-400 mb-1">Time</label>
                 <input
                   type="time"
                   value={form.Time}
                   onChange={e => setForm({ ...form, Time: e.target.value })}
-                  className="input mt-1 w-full"
+                  className="input px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-amber-400"
                 />
               </div>
 
-              <div>
-                <label className="text-xs text-gray-400">Guests</label>
+              <div className="flex flex-col">
+                <label className="text-xs text-gray-400 mb-1">Guests</label>
                 <select
-                  className="input mt-1 w-full"
                   value={form.Guests}
                   onChange={e => setForm({ ...form, Guests: parseInt(e.target.value) })}
+                  className="input px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-amber-400"
                 >
-                  {[1,2,3,4,5,6,7,8].map(n => (
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
                     <option key={n} value={n}>{n} {n === 1 ? "Guest" : "Guests"}</option>
                   ))}
                 </select>
@@ -126,13 +126,13 @@ export default function Reservation() {
             </div>
 
             {/* Guest Info */}
-            <div className="space-y-4">
+            <div className="space-y-4 mb-6">
               <input
                 type="text"
                 value={form.FullName}
                 onChange={e => setForm({ ...form, FullName: e.target.value })}
                 placeholder="Full Name"
-                className="input w-full"
+                className="input w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-amber-400"
               />
 
               <input
@@ -140,7 +140,7 @@ export default function Reservation() {
                 placeholder="Phone Number"
                 value={form.Phone}
                 onChange={e => setForm({ ...form, Phone: e.target.value })}
-                className="input w-full"
+                className="input w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-amber-400"
               />
 
               <input
@@ -148,7 +148,7 @@ export default function Reservation() {
                 placeholder="Email"
                 value={form.Email}
                 onChange={e => setForm({ ...form, Email: e.target.value })}
-                className="input w-full"
+                className="input w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-amber-400"
                 required
               />
 
@@ -157,17 +157,18 @@ export default function Reservation() {
                 value={form.SpecialRequests}
                 onChange={e => setForm({ ...form, SpecialRequests: e.target.value })}
                 rows={3}
-                className="input resize-none w-full"
+                className="input resize-none w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-amber-400"
               />
             </div>
 
-            {/* CTA */}
+            {/* Submit */}
             <motion.button
               disabled={submitting}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={handleReserve}
-              className="mt-6 w-full rounded-full bg-amber-500 py-3 text-black font-semibold tracking-wide hover:bg-amber-400 transition"
+              className={`w-full py-3 rounded-full font-semibold tracking-wide transition
+                ${submitting ? "bg-gray-600 cursor-not-allowed" : "bg-amber-500 hover:bg-amber-400 text-black"}`}
             >
               {submitting ? "Sending..." : "Confirm Reservation"}
             </motion.button>
