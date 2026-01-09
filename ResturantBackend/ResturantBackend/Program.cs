@@ -4,17 +4,18 @@ using MyApp.Models;
 using ResturantBackend.Models;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ========================
 // ✅ CORS
+// ========================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-            "http://localhost:3000",
+            "http://localhost:3001",
             "https://customresturant.vercel.app",
             "https://resturant-v02.vercel.app",
             "https://resturant-v02-dvpb5hju7-uniqueuos-projects.vercel.app",
@@ -25,43 +26,74 @@ builder.Services.AddCors(options =>
     });
 });
 
+// ========================
+// ✅ Controllers
+// ========================
 builder.Services.AddControllers();
 
-// ✅ DATABASE CONNECTION
+// ========================
+// ✅ Database Connection
+// ========================
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL") 
                   ?? builder.Configuration["DATABASE_URL"];
+
 if (string.IsNullOrEmpty(databaseUrl))
     throw new Exception("DATABASE_URL is not set");
 
 var uri = new Uri(databaseUrl);
-var db = uri.AbsolutePath.Trim('/');
+var dbName = uri.AbsolutePath.Trim('/');
 var userInfo = uri.UserInfo.Split(':');
 int port = uri.Port > 0 ? uri.Port : 5432;
 
-var connectionString = $"Host={uri.Host};Port={port};Database={db};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+var connectionString = $"Host={uri.Host};Port={port};Database={dbName};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
-// ✅ Apply migrations automatically
+// ========================
+// ✅ Apply Migrations & Seed Data
+// ========================
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.Migrate();
+
+    // Seed menu items if empty
+    if (!context.MenuItems.Any())
+    {
+        context.MenuItems.AddRange(new[]
+        {
+            new MenuItem { Img = "/imgs/menu-1.png", Name = "Greek Salad", Category = "Fresh", Price = 25.50m, Description = "A refreshing mix of cucumbers, olives, and feta cheese drizzled with olive oil." },
+            new MenuItem { Img = "/imgs/menu-2.png", Name = "Pasta Carbonara", Category = "Chef's Special", Price = 30.00m, Description = "Classic Italian pasta with creamy sauce and crispy bacon." },
+            new MenuItem { Img = "/imgs/menu-3.png", Name = "Tomato Soup", Category = "Hot", Price = 18.00m, Description = "Creamy tomato soup served with fresh herbs and toast." },
+            new MenuItem { Img = "/imgs/menu-4.png", Name = "Beef Steak", Category = "Grilled", Price = 45.00m, Description = "Tender steak grilled to perfection with pepper sauce." },
+            new MenuItem { Img = "/imgs/menu-5.png", Name = "Seafood Platter", Category = "Ocean Fresh", Price = 60.00m, Description = "Shrimp, calamari, and crab served with lemon butter." },
+            new MenuItem { Img = "/imgs/menu-6.png", Name = "Chocolate Cake", Category = "Dessert", Price = 25.50m, Description = "Moist chocolate cake topped with creamy frosting." }
+        });
+        context.SaveChanges();
+    }
 }
 
+// ========================
 // ✅ Middleware
+// ========================
 app.UseCors("AllowFrontend");
 app.UseStaticFiles();
 
-// ✅ Menu endpoints
+app.MapGet("/reserve", () => new { img = "imgs/about-banner.jpg", header = "Reserve Your Seat at the Table", text1 = "Step into an atmosphere where flavor, craft, and elegance meet. Secure your table in advance and let us prepare an unforgettable dining experience for you.", text2 = "Each reservation is carefully curated to ensure comfort, privacy, and exceptional service from the moment you arrive.", text3 = "Our kitchen operates with precision and passion — allowing us to deliver a seamless experience, from the first course to the final impression." });
+
+// ========================
+// ✅ Menu Endpoints
+// ========================
 app.MapGet("/menujs", async (AppDbContext db) => await db.MenuItems.ToListAsync());
+
 app.MapPost("/menujs", async (AppDbContext db, MenuItem item) =>
 {
     db.MenuItems.Add(item);
     await db.SaveChangesAsync();
     return Results.Created($"/menujs/{item.Id}", item);
 });
+
 app.MapPut("/menujs/{id}", async (int id, AppDbContext db, MenuItem update) =>
 {
     var item = await db.MenuItems.FindAsync(id);
@@ -76,6 +108,7 @@ app.MapPut("/menujs/{id}", async (int id, AppDbContext db, MenuItem update) =>
     await db.SaveChangesAsync();
     return Results.Ok(item);
 });
+
 app.MapDelete("/menujs/{id}", async (int id, AppDbContext db) =>
 {
     var item = await db.MenuItems.FindAsync(id);
@@ -86,7 +119,9 @@ app.MapDelete("/menujs/{id}", async (int id, AppDbContext db) =>
     return Results.NoContent();
 });
 
-// ✅ Other endpoints
+// ========================
+// ✅ Other Endpoints
+// ========================
 app.MapGet("/", () => "🍽️ Welcome to Unique Uo’s Restaurant API!");
 app.MapGet("/services", () => new
 {
@@ -103,24 +138,23 @@ app.MapGet("/story", () => new
     storytxt2 = "Lorem ipsum dolor sit amet consectetur adipisicing elit..."
 });
 
-// ✅ Reserve endpoint with SendGrid
+// ========================
+// ✅ Reserve Endpoint with SendGrid
+// ========================
 app.MapPost("/reserve", async (AppDbContext db, Reservation res) =>
 {
-    Console.WriteLine("📩 Reserve endpoint hit");
-
     res.Date = res.Date.ToUniversalTime();
     db.Reservations.Add(res);
     await db.SaveChangesAsync();
-    Console.WriteLine("📩 Reservation saved, sending email...");
 
     await SendReservationEmailSendGridAsync(res);
-
-    Console.WriteLine("📩 Email function completed");
 
     return Results.Created($"/reservations/{res.Id}", res);
 });
 
-// --- SendGrid Email Function ---
+// ========================
+// ✅ SendGrid Email Function
+// ========================
 async Task SendReservationEmailSendGridAsync(Reservation res)
 {
     try
@@ -138,22 +172,23 @@ async Task SendReservationEmailSendGridAsync(Reservation res)
         var client = new SendGridClient(apiKey);
         var from = new EmailAddress(fromEmail, "Unique Dine");
 
-        // --- Customer Email ---
-        var subject = "Reservation Confirmed!";
-        var to = new EmailAddress(res.Email, res.FullName);
-        var htmlContent = $@"
+        // Customer Email
+        var msg = MailHelper.CreateSingleEmail(
+            from,
+            new EmailAddress(res.Email, res.FullName),
+            "Reservation Confirmed!",
+            "",
+            $@"
             <h2>Hi {res.FullName}, your reservation is confirmed!</h2>
             <p>📅 Date: {res.Date:dd/MM/yyyy}</p>
             <p>⏰ Time: {res.Time}</p>
             <p>👥 Guests: {res.Guests}</p>
             {(string.IsNullOrWhiteSpace(res.SpecialRequests) ? "" : $"<p>💌 Requests: {res.SpecialRequests}</p>")}
-            <p>Thank you for booking with Unique Dine!</p>";
-        var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
-        var response = await client.SendEmailAsync(msg);
-        if (response.StatusCode != System.Net.HttpStatusCode.Accepted)
-            Console.WriteLine($"❌ Customer email failed: {response.StatusCode}");
+            <p>Thank you for booking with Unique Dine!</p>"
+        );
+        await client.SendEmailAsync(msg);
 
-        // --- Owner/Admin Email ---
+        // Owner/Admin Email
         if (!string.IsNullOrWhiteSpace(ownerEmail))
         {
             var ownerMsg = MailHelper.CreateSingleEmail(
@@ -169,14 +204,9 @@ async Task SendReservationEmailSendGridAsync(Reservation res)
                 <p>📅 Date: {res.Date:dd/MM/yyyy}</p>
                 <p>⏰ Time: {res.Time}</p>
                 <p>👥 Guests: {res.Guests}</p>
-                {(string.IsNullOrWhiteSpace(res.SpecialRequests) ? "" : $"<p>💌 Requests: {res.SpecialRequests}</p>")}")
-            ;
-            var ownerResponse = await client.SendEmailAsync(ownerMsg);
-            if (ownerResponse.StatusCode != System.Net.HttpStatusCode.Accepted)
-                Console.WriteLine($"❌ Owner email failed: {ownerResponse.StatusCode}");
+                {(string.IsNullOrWhiteSpace(res.SpecialRequests) ? "" : $"<p>💌 Requests: {res.SpecialRequests}</p>")}"); 
+            await client.SendEmailAsync(ownerMsg);
         }
-
-        Console.WriteLine($"✅ Emails sent to {res.Email}" + (string.IsNullOrWhiteSpace(ownerEmail) ? "" : $" and owner ({ownerEmail})"));
     }
     catch (Exception ex)
     {
@@ -186,7 +216,9 @@ async Task SendReservationEmailSendGridAsync(Reservation res)
 
 app.Run();
 
-// ✅ MODELS
+// ========================
+// ✅ Models
+// ========================
 public class Order
 {
     public string CustomerName { get; set; } = string.Empty;
