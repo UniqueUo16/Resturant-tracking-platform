@@ -23,36 +23,35 @@ export default function Reservation() {
     }
 
     setSubmitting(true);
+try {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reserve`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(form),
+  });
 
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reserve`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => null);
+    throw new Error(errData?.message || "Reservation failed");
+  }
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => null);
-        throw new Error(errData?.message || "Reservation failed");
-      }
+  alert("Reservation sent successfully!");
+  setForm({
+    FullName: "",
+    Email: "",
+    Phone: "",
+    Date: "",
+    Time: "",
+    Guests: 1,
+    SpecialRequests: "",
+  });
+} catch (err) {   // <-- remove ": any"
+  console.error(err);
+  alert(err.message || "Something went wrong");
+} finally {
+  setSubmitting(false);
+}
 
-      alert("Reservation sent successfully!");
-      setForm({
-        FullName: "",
-        Email: "",
-        Phone: "",
-        Date: "",
-        Time: "",
-        Guests: 1,
-        SpecialRequests: "",
-      });
-    } catch (err: any) {
-      console.error(err);
-      alert(err.message || "Something went wrong");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   return (
     <div className="full-reserve bg-center bg-contain min-h-screen flex flex-col">
@@ -182,4 +181,4 @@ export default function Reservation() {
       </div>
     </div>
   );
-}
+}}
