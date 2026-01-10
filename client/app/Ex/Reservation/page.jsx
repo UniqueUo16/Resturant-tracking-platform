@@ -189,8 +189,8 @@ function CartContent({ cart, total, addToCart, removeFromCart }) {
   return (
     <>
       <div className="space-y-4 mt-3">
-        <span className="text-gray-100 uppercase tracking-widest border-b pb-1">
-          Items Review
+        <span className="text-gray-100 uppercase tracking-widest  pb-1">
+          Item Review
         </span>
         {Object.keys(cart).length === 0 ? (
           <p className="text-gray-100 text-sm italic mt-2">Your cart is empty.</p>
