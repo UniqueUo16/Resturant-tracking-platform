@@ -10,6 +10,7 @@ import Newsletter from "./components/Service";
 import Sidebar from "./components/Sidebar";
 import Story from './components/Story';
 import Menu from "./components/menu";
+import Image from "next/image";
 
 const montrasset = Montserrat({
   subsets:["latin"],
@@ -37,19 +38,53 @@ export default function Home() {
 
 
     <>
-      {/* Full-page Preloader */}
-      {loading && (
-        <div className={`${montrasset.className} fixed inset-0 z-50 flex flex-col justify-center items-center bg-[orange]`}>
-          <motion.div
-            className="w-20 h-20 border-4 border-yellow-400 border-t-transparent rounded-full"
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          />
-          <p className="mt-4 text-white text-lg sm:text-xl font-semibold">
-            Loading... Oh you stayed  🍴
-          </p>
-        </div>
-      )}
+     {/* Full-page Preloader */}
+{loading && (
+  <motion.div
+    className={`${montrasset.className} fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0b0b0b]`}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+  >
+    {/* Logo / Loader */}
+    <motion.div
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="relative flex items-center justify-center"
+    >
+      {/* Gold ring */}
+      <motion.div
+        className="absolute w-28 h-28 rounded-full border border-amber-500/40"
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
+      />
+
+      {/* Inner pulse */}
+      <motion.div
+        className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-yellow-600 shadow-[0_0_40px_rgba(255,193,7,0.35)]"
+        animate={{ scale: [1, 1.08, 1] }}
+        transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+      />
+    </motion.div>
+
+    {/* Text */}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5 }}
+      className="mt-10 text-center"
+    >
+      <p className="text-sm tracking-widest text-gray-400 uppercase">
+        Preparing your experience
+      </p>
+      <p className="mt-2 text-lg sm:text-xl font-serif text-amber-400">
+        Please take a seat 🍷
+      </p>
+    </motion.div>
+  </motion.div>
+)}
+
 
       {/* Main content */}
       <div className={`${loading ? "hidden" : "block"}`}>

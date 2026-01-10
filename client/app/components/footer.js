@@ -1,5 +1,10 @@
 "use client";
 import { Youtube, Twitter, Linkedin } from "lucide-react";
+import { Plus_Jakarta_Sans } from "next/font/google";
+
+const jk = Plus_Jakarta_Sans({
+  subsets:["vietnamese"], weight:["400", "600", "800"]
+})
 
 export default function Footer() {
   const socials = [
@@ -19,12 +24,14 @@ export default function Footer() {
         {/* LEFT — Brand & Description */}
         <div className="flex-1 space-y-4">
           <h2 className="text-amber-500 text-3xl font-serif tracking-wide">
-            Unique Uo’s Restaurant
+             -----Template Lo Dine
           </h2>
           <p className="text-sm text-gray-400 leading-relaxed">
             Experience world-class dining with an atmosphere that blends luxury,
             comfort, and culinary passion. Join us for unforgettable flavors and memories.
           </p>
+          <p className={`${jk.className} transform-content  text-gray-200 leading-relaxed`}> ""creator ---- I'm offering modern resturant websites based on template and custom. Branding and content are customized per resturant ""</p>
+       
         </div>
 
         {/* CENTER — Newsletter */}

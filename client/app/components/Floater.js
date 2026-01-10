@@ -50,7 +50,7 @@ export default function Pricing() {
           onClick={() => setOpen(true)}
           className="bg-amber-500 text-black font-semibold px-5 py-2 rounded-lg hover:bg-amber-400 transition"
         >
-          Proceed to Checkout
+          Proceed A Click Away
         </Link>
       </div>
 

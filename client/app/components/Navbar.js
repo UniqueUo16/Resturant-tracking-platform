@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
   Utensils,
   CalendarDays,
@@ -41,9 +42,9 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="text-amber-100 font-bold text-xl sm:text-2xl tracking-wide flex items-center gap-2"
+          className="text-amber-100 font-bold text-md sm:text-2xl tracking-wide flex items-center gap-2"
         >
-          🧩 <span className="font-serif">L’Uo Dine</span>
+          🧩 <span className="font-serif">-----Template Lo Dine</span>
         </Link>
 
         {/* Search */}
@@ -58,23 +59,28 @@ export default function Navbar() {
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle Menu"
         >
-          <motion.svg
-            key={isOpen ? "close" : "open"}
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-7 h-7"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            initial={{ rotate: -90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {isOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </motion.svg>
+          <button
+  className="md:hidden focus:outline-none"
+  onClick={() => setIsOpen(!isOpen)}
+  aria-label="Toggle Menu"
+>
+  <motion.div
+    initial={{ rotate: -90, opacity: 0 }}
+    animate={{ rotate: 0, opacity: 1 }}
+    exit={{ rotate: 90, opacity: 0 }}
+    transition={{ duration: 0.25 }}
+  >
+    <Image
+      src="/imgs/icon-menu.png"
+      alt="Menu toggle"
+      width={28}
+      height={28}
+      className="opacity-90 hover:opacity-100 transition "
+    />
+  </motion.div>
+  
+</button>
+
         </button>
 
         {/* Desktop Nav */}
