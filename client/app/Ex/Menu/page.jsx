@@ -13,12 +13,10 @@ export default function ShopPage() {
   const [loading, setLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // 🛒 Zustand cart store
   const cart = useCartStore((state) => state.cart);
   const addToCart = useCartStore((state) => state.addToCart);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
 
-  // ✅ Fetch menu items from backend
   useEffect(() => {
     async function fetchMenu() {
       try {
@@ -35,13 +33,11 @@ export default function ShopPage() {
     fetchMenu();
   }, []);
 
-  // ✅ Filtered menu by category
   const filteredItems =
     filter === "All"
       ? menuItems
       : menuItems.filter((item) => item.category === filter);
 
-  // ✅ Calculate total price correctly (since cart stores objects)
   const total = Object.values(cart).reduce(
     (acc, item) => acc + item.price * item.qty,
     0
@@ -58,10 +54,10 @@ export default function ShopPage() {
   }
 
   return (
-    <section className="min-h-screen bg-[#ececec] mt-12 text-gray-900 font-sans relative flex flex-col lg:flex-row">
+    <section className="min-h-screen bg-[#ececec] text-gray-900 font-sans relative flex flex-col lg:flex-row">
       {/* 🛒 Desktop Cart Sidebar */}
       <motion.aside
-        className="hidden lg:flex lg:w-[25%] bg-[#111] border-l border-gray-800 p-8 sticky top-0 h-screen flex-col justify-between"
+        className="hidden lg:flex lg:w-[25%] bg-[#111] border-l border-gray-800 p-6 lg:p-8 sticky top-0 h-screen flex-col justify-between"
         initial={{ x: 100, opacity: 0 }}
         whileInView={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
@@ -83,17 +79,19 @@ export default function ShopPage() {
       </button>
 
       {/* 🛍️ Product Grid */}
-      <div className="flex-1 p-6 sm:p-8 lg:p-12 mt-20 lg:mt-0">
+      <div className="flex-1 p-4 sm:p-6 lg:p-12 mt-20 lg:mt-0">
         {/* Header + Filter */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-          <h1 className="text-3xl font-serif text-amber-500">Order Online</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-serif text-amber-500">
+            Order Online
+          </h1>
 
           <div className="flex flex-wrap gap-2 mt-4 sm:mt-0">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-4 py-2 text-sm rounded-full transition-all ${
+                className={`px-3 sm:px-4 py-1 sm:py-2 text-sm rounded-full transition-all ${
                   filter === cat
                     ? "bg-amber-500 text-black"
                     : "border border-gray-600 hover:border-amber-500"
@@ -108,27 +106,26 @@ export default function ShopPage() {
         {/* 🧁 Product Cards */}
         <motion.div
           layout
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
         >
           {filteredItems.map((item) => (
             <motion.div
               key={item.id}
-              className="bg-[#1d1d1d] w-55 rounded p-4 flex flex-col justify-between shadow-md shadow-[black] transition"
-              whileHover={{ scale: 1.03 }}
+              className="bg-[#1d1d1d] rounded-lg p-4 flex flex-col justify-between shadow-md shadow-[black] transition hover:scale-105"
             >
-              <Image
-                src={item.img || "/imgs/default.png"}
-                alt={item.name}
-                width={300}
-                height={200}
-                className="rounded-lg object-cover mb-4"
-              />
-              <div className="flex flex-col justify-between flex-1">
-                <h3 className="text-lg font-semibold text-white">
-                  {item.name}
-                </h3>
-                <p className="text-xs text-gray-500">{item.category}</p>
-                <div className="flex items-center justify-between mt-4">
+              <div className="relative w-full h-48 sm:h-40 lg:h-48 mb-4">
+                <Image
+                  src={item.img || "/imgs/default.png"}
+                  alt={item.name}
+                  fill
+                  className="rounded-lg object-cover"
+                />
+              </div>
+
+              <div className="flex flex-col flex-1">
+                <h3 className="text-lg font-semibold text-white">{item.name}</h3>
+                <p className="text-xs text-gray-400 mt-1">{item.category}</p>
+                <div className="flex items-center justify-between mt-3">
                   <span className="text-amber-500 font-bold">
                     ${item.price.toFixed(2)}
                   </span>
@@ -192,27 +189,31 @@ function CartContent({ cart, total, addToCart, removeFromCart }) {
   return (
     <>
       <div className="space-y-4 mt-3">
-        <span className="text-gray-100 uppercase tracking-widest border-b ">items review</span>
-        <div></div>
+        <span className="text-gray-100 uppercase tracking-widest  pb-1">
+          Item Review
+        </span>
         {Object.keys(cart).length === 0 ? (
-          <p className="text-gray-100 text-sm italic">Your cart is empty.</p>
+          <p className="text-gray-100 text-sm italic mt-2">Your cart is empty.</p>
         ) : (
           Object.values(cart).map((item) => (
-            <div key={item.id} className="flex justify-between items-center">
+            <div
+              key={item.id}
+              className="flex justify-between items-center mt-2 border-b border-gray-700 pb-2"
+            >
               <span className="text-sm text-gray-100 tracking-wider">{item.name}</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => removeFromCart(item)}
-                  className="p-1 border border-gray-300 rounded-full hover:border-amber-500"
+                  className="p-1 border border-gray-500 rounded-full hover:border-amber-500"
                 >
                   <Minus size={12} className="text-gray-100" />
                 </button>
                 <span className="text-sm text-orange-400">{item.qty}</span>
                 <button
                   onClick={() => addToCart(item)}
-                  className="p-1 border border-gray-300 rounded-full hover:border-amber-500"
+                  className="p-1 border border-gray-500 rounded-full hover:border-amber-500"
                 >
-                  <Plus size={12} className="text-gray-100"/>
+                  <Plus size={12} className="text-gray-100" />
                 </button>
               </div>
             </div>
@@ -222,13 +223,11 @@ function CartContent({ cart, total, addToCart, removeFromCart }) {
 
       <div className="border-t border-gray-700 mt-6 pt-4">
         <p className="text-gray-400 text-sm mb-2">Subtotal:</p>
-        <p className="text-lg font-semibold text-amber-500">
-          ${total.toFixed(2)}
-        </p>
+        <p className="text-lg font-semibold text-amber-500">${total.toFixed(2)}</p>
 
         <Link href="/Ex/Checkpage">
           <button className="mt-4 w-full py-2 bg-amber-500 text-black rounded-full font-semibold hover:bg-amber-400 transition">
-            🧩 Proceed to Checkout
+            🧩 Proceed to Order
           </button>
         </Link>
       </div>
