@@ -20,7 +20,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata = {
-  title: "Restaurant-v0.2 template for resturants",
+  title: "Restaurant-v0.2 Premium template for resturants",
   description: "A modern, high-performance restaurant web template designed for owners who want more than just a beautiful site, they want real reservations, brand presence, and scalability ----Created by Unique Uo",
 };
 
